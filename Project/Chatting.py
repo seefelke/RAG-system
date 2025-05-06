@@ -9,7 +9,7 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, memory=memory)
 
 while True:
-    query = input("\nAsk a question (or type 'exit'): ")
+    query = input("\nStelle eine Frage (oder 'exit'): ")
     if query.lower() == "exit":
         break
     result = qa_chain.invoke(query)
