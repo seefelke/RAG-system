@@ -18,3 +18,12 @@ Added LLM integration with Ollama. Currently only via code and not in a conversa
 Added continuous chatting with LLM and refactored single query into seperate function.
 
 Currently, it sometimes answers in english and answers too rigid based on the PDF. E.g. a query that has no connection to the PDF like "Antworte nur in Deutsch" does not really work. ConversationBufferMemory seems to be deprecated so changing that might help.
+
+## Comments from Daksitha
+- instead of  ConversationBufferMemory maybe you could give a try 
+    ````memory = ConversationBufferWindowMemory(
+            k=10,  # number of conversation turns (or messages) to keep
+            memory_key="chat_history",
+            return_messages=True
+        )
+         together with ConversationalRetrievalChain
