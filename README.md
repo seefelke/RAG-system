@@ -27,3 +27,10 @@ Currently, it sometimes answers in english and answers too rigid based on the PD
             return_messages=True
         )
          together with ConversationalRetrievalChain
+
+---
+Tried ConversationBufferWindowMemory but it didn't improve it, but maybe I used it wrong.
+
+Now I switched the chatting structure to use create_retrieval_chain with premade prompt templates and system context for the agent.
+
+This improved the agent to stick to German as well as taking previous context into account, although it still works poorly when talking about things that are not part of the document.
