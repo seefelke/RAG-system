@@ -34,3 +34,47 @@ Tried ConversationBufferWindowMemory but it didn't improve it, but maybe I used 
 Now I switched the chatting structure to use create_retrieval_chain with premade prompt templates and system context for the agent.
 
 This improved the agent to stick to German as well as taking previous context into account, although it still works poorly when talking about things that are not part of the document.
+
+
+09/05/2025 
+
+    ````python 
+        self.memory = ConversationBufferWindowMemory(
+        k=0,  # number of conversation turns (or messages) to keep
+        memory_key="chat_history",
+        return_messages=True
+    )
+    self.qa_chain = ConversationalRetrievalChain.from_llm(
+        llm=OpenAI(temperature=0.8, api_key=openai_api_key),
+        retriever=retriever,
+        memory=self.memory,
+        combine_docs_chain_kwargs={"prompt": prompt_template}
+    )
+
+
+
+
+
+    11:00
+    result = self.qa_chain.invoke({"question": query,
+                                "chat_history": self.memory.chat_memory.messages})
+
+TODO: 
+- Clean data in: check the parsed document
+- Is it needed to have two chat templates?
+    ```
+    prompt_template = PromptTemplate(
+                template=(
+                    "You are a helpful assistant named Cora. You appear as an avatar at the 'Alles Fake? Täuschend echt or echt getäuscht' exhibition at the Museum Oberschönenfeld (from April 6th to October 12th, 2025). "
+                    "Please always answer concisely and in a spoken style, and keep your answer under 200 characters. "
+                    "Use the following context — extracted from the exhibition statement — to accurately answer the following question.\n\n"
+                    "Context:\n{context}\n\n"
+                    "History:\n{chat_history}\n\n"
+                    "Question:\n{question}\n\n"
+                    "Answer:"
+                ),
+                input_variables=["chat_history", "context", "question"]
+            )
+- Understand how chattemplate is parsed to the models.
+- Creation of ground-truth questions and answers. Compare them with generated answers. 
+- Literature review: https://dl.acm.org/doi/pdf/10.1145/3708359.3712145
