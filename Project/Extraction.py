@@ -3,11 +3,25 @@ from langchain_core.vectorstores import VectorStore
 from langchain_text_splitters import  RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
+import os
 from langchain_community.vectorstores import FAISS
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
-    return loader.load()
+
+    os.makedirs("loaded_docs", exist_ok=True)
+    documents = loader.load()
+
+    output_file = "loaded_doc_combined.txt"
+    # Combine all document contents
+    combined_text = "\n\n".join(
+        f"--- Document {i + 1} ---\n{doc.page_content}" for i, doc in enumerate(documents)
+    )
+
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(combined_text)
+
+    return documents
 
 def split_documents(documents: list[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=650,
