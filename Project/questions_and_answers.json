@@ -1,0 +1,136 @@
+{
+  "einfache_fragen": [
+    {
+      "frage": "Was versteht man unter Mimikry in der Natur?",
+      "antwort": "Mimikry bezeichnet das Nachahmen anderer Lebewesen zur Täuschung von Feinden, wie z.B. Schwebfliegen, die wie Wespen aussehen."
+    },
+    {
+      "frage": "Was bedeutet Mimese?",
+      "antwort": "Mimese ist das Anpassen des Aussehens an den Lebensraum, wie bei Schmetterlingen, die vertrockneten Blättern ähneln."
+    },
+    {
+      "frage": "Warum ist der Frischling gut getarnt?",
+      "antwort": "Wegen seines gestreiften Fells, das ihn im Waldboden verschwimmen lässt."
+    },
+    {
+      "frage": "Was ist der Vorteil von Kunstseide gegenüber echter Seide?",
+      "antwort": "Kunstseide ist pflegeleichter und unempfindlicher."
+    },
+    {
+      "frage": "Warum wurde der Kleppermantel zum Statussymbol?",
+      "antwort": "Aufgrund seiner Innovation und weiten Verbreitung, besonders ab den 1950er-Jahren."
+    },
+    {
+      "frage": "Was bedeutet Konterschattierung bei Tieren?",
+      "antwort": "Die Fellfärbung tarnt Tiere gleichzeitig von oben und unten, z.B. Eichhörnchen."
+    },
+    {
+      "frage": "Wie schützt sich das Rehkitz vor Raubtieren?",
+      "antwort": "Durch seine punktierte Fellfärbung und fehlenden Eigengeruch."
+    },
+    {
+      "frage": "Welche Strategien der Täuschung nutzen Tiere?",
+      "antwort": "Mimese, Mimikry und Konterschattierung."
+    },
+    {
+      "frage": "Was ist Kunstleder?",
+      "antwort": "Kunstleder ist meist ein mit PVC beschichtetes Textilgewebe, das echtes Leder täuschend echt imitiert."
+    },
+    {
+      "frage": "Was ist der Unterschied zwischen Kristall- und Pressglas?",
+      "antwort": "Kristallglas wird handgeschliffen und ist teuer, während Pressglas durch Formen geprägt und günstiger ist."
+    }
+  ],
+  "fragenpaare": [
+    {
+      "leicht": "Warum sehen manche Schwebfliegen wie Wespen aus?",
+      "schwer": "Welche ökologische Strategie steht hinter der Warntracht harmloser Insektenarten?",
+      "antwort": "Mimikry."
+    },
+    {
+      "leicht": "Was machen Schmetterlinge, um sich zu tarnen?",
+      "schwer": "Wie wird die morphologische Umweltanpassung bei Tieren wissenschaftlich bezeichnet?",
+      "antwort": "Mimese."
+    },
+    {
+      "leicht": "Warum wechselt das Große Wiesel im Winter seine Fellfarbe?",
+      "schwer": "Wie nennt man eine saisonale morphologische Anpassung an unterschiedliche Hintergrundbedingungen?",
+      "antwort": "Tarnung durch Fellfarbe."
+    },
+    {
+      "leicht": "Was ist das Besondere an der Fellfärbung des Eichhörnchens?",
+      "schwer": "Welche optische Schutzstrategie wird durch unterschiedlich gefärbte Körperseiten verwirklicht?",
+      "antwort": "Konterschattierung."
+    },
+    {
+      "leicht": "Was konnte man mit Kunstfasern wie Kunstseide nachahmen?",
+      "schwer": "Welcher Technologiesprung ermöglichte breite Zugänglichkeit zu Luxusgütern um 1900?",
+      "antwort": "Herstellung von Imitaten wie Kunstseide."
+    },
+    {
+      "leicht": "Warum war der Kleppermantel so beliebt?",
+      "schwer": "Welches Beispiel zeigt frühe markenrechtliche Abgrenzung von Imitaten?",
+      "antwort": "Kleppermantel."
+    },
+    {
+      "leicht": "Warum sieht man Rehkitze so schlecht?",
+      "schwer": "Welche Rolle spielen olfaktorische und visuelle Faktoren in der Jungtier-Tarnung?",
+      "antwort": "Tarnung durch Fell und Geruchslosigkeit."
+    },
+    {
+      "leicht": "Welche Farbe hat das Tarnmuster der Kreuzotter?",
+      "schwer": "Wie beeinflusst das Zickzackmuster die optische Wahrnehmung der Körperkonturen?",
+      "antwort": "Tarnung durch Musterauflösung."
+    },
+    {
+      "leicht": "Warum ist die Erdkröte schwer zu sehen?",
+      "schwer": "Welche biologischen Eigenschaften unterstützen das Tarnverhalten bodennaher Amphibien?",
+      "antwort": "Farb- und Strukturmimik."
+    },
+    {
+      "leicht": "Warum gibt es heute so viele Luxusimitate?",
+      "schwer": "Welche sozioökonomischen Effekte hatten Imitatindustrien im 19. Jahrhundert?",
+      "antwort": "Demokratisierung von Luxus durch Imitate."
+    }
+  ],
+  "schwere_fragen": [
+    {
+      "frage": "Inwiefern spiegeln Mimese und Mimikry in der Tierwelt grundlegende Prinzipien gesellschaftlicher Täuschung wider?",
+      "antwort": "Mimese und Mimikry sind auch als Metaphern für soziale und kulturelle Imitation interpretierbar. Bei der Mimese passen sich Tiere vollständig ihrer Umgebung an, um unsichtbar zu bleiben, z.B. Schmetterlinge, die wie vertrocknete Blätter aussehen. Diese Form der Anpassung findet ihr gesellschaftliches Pendant in der subtilen Anpassung an Normen und Kontexte, um nicht aufzufallen. Die Mimikry hingegen imitiert bewusst etwas Gefährliches, was sozialen Strategien ähnelt, bei denen Menschen Macht oder Kompetenz vorspiegeln, um sich Schutz oder Status zu sichern."
+    },
+    {
+      "frage": "Wie reflektieren historische Imitate wie Holzmalerei und Intarsienkopien den sozialen Umgang mit Statussymbolen?",
+      "antwort": "Holzmalerei wie sie von Adalbert Hösle praktiziert wurde, imitierte teure Hölzer wie Mahagoni oder Kirschholz auf günstigen Fichtenmöbeln. Ein klarer Versuch, den äußeren Anschein von Wohlstand zu erzeugen, ohne die tatsächlichen Mittel aufzubringen. Sie offenbaren den Wunsch, durch visuelle Täuschung kulturellen Status zu simulieren. Bereits im 16. Jahrhundert wurden sie als unerlaubter Wettbewerb angesehen, was ihren Einfluss auf soziale Wahrnehmung unterstreicht."
+    },
+    {
+      "frage": "Inwiefern beeinflusste das Verbot und die Verknappung natürlicher Materialien wie Elfenbein die Entwicklung neuer Werkstoffe?",
+      "antwort": "Das Elfenbeinverbot und ethische Bedenken führten zur Erfindung von Zelluloid und anderen Kunststoffen, die natürliche Materialien imitieren und zugleich neue Designmöglichkeiten boten."
+    },
+    {
+      "frage": "Welche Rolle spielten Ästhetik und Illusion bei der Massenproduktion von Imitaten im 20. Jahrhundert?",
+      "antwort": "Die visuelle Nähe zum Original war entscheidend für den Erfolg von Produkten wie Pressglas oder Kunstkristallen. Die Illusion von Hochwertigkeit ersetzte zunehmend das materielle Original."
+    },
+    {
+      "frage": "Wie lässt sich der Wandel vom funktionalen Ersatzstoff zur kulturell akzeptierten Designalternative am Beispiel von Kunststoff nachvollziehen?",
+      "antwort": "Kunststoff entwickelte sich vom billigen Imitat zu einem vielseitigen, anerkannten Designmaterial, das nicht nur Originale kopierte, sondern auch neue Gestaltungsspielräume eröffnete."
+    }
+  ],
+  "allgemeine_fragen": [
+    {
+      "frage":  "Was ist der Unterschied zwischen Wetter und Klima?",
+      "antwort": "Wetter beschreibt kurzfristige atmosphärische Bedingungen, während Klima die durchschnittlichen Wetterverhältnisse über einen längeren Zeitraum in einer Region meint."
+    },
+    {
+      "frage":  "Wie funktioniert ein Verbrennungsmotor?",
+      "antwort": "In einem Verbrennungsmotor wird ein Luft-Kraftstoff-Gemisch in einem Zylinder gezündet, wodurch Gase expandieren, Kolben in Bewegung setzen und mechanische Energie erzeugen."
+    },
+    {
+      "frage":  "Wer war der erste Mensch auf dem Mond?",
+      "antwort": "Neil Armstrong."
+    },
+    {
+      "frage":  "Warum ist der Himmel blau?",
+      "antwort": "Das Sonnenlicht wird in der Atmosphäre gestreut. Blaues Licht hat eine kürzere Wellenlänge und wird stärker gestreut als andere Farben. Deshalb erscheint uns der Himmel blau."
+    }
+  ]
+}
