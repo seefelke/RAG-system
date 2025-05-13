@@ -89,7 +89,7 @@ Added a questions and answers json for evaluation. Questions have 4 categories:
 
 Simple questions with a short answer.
 
-Question pairs that consist of two questions that have the same answer but are in a simple and a difficult way.
+Question pairs that consist of two questions that have the same answer but are phrased in a simple and a difficult way.
 
 Difficult questions that require a longer answer and more context.
 
