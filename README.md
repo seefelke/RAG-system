@@ -78,3 +78,19 @@ TODO:
 - Understand how chattemplate is parsed to the models.
 - Creation of ground-truth questions and answers. Compare them with generated answers. 
 - Literature review: https://dl.acm.org/doi/pdf/10.1145/3708359.3712145
+
+---
+
+### Sprint 2
+
+Loaded PDF is now saved back to disc as txt file to check for inconsistencies.
+
+Added a questions and answers json for evaluation. Questions have 4 categories:
+
+Simple questions with a short answer.
+
+Question pairs that consist of two questions that have the same answer but are phrased in a simple and a difficult way.
+
+Difficult questions that require a longer answer and more context.
+
+General questions that have no connection to the PDF.
