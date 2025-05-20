@@ -94,3 +94,13 @@ Question pairs that consist of two questions that have the same answer but are p
 Difficult questions that require a longer answer and more context.
 
 General questions that have no connection to the PDF.
+
+---
+
+Added second QA chain like in the above example for testing. 
+
+Quality of answers is similiar to the previous version but for some reason it rarely switched to english or answered in broken German.
+
+One thing to note is when asking about something general it often quotes something random from the document and then adds the answer to the question at the end.
+
+Memory is hit or miss in both versions, sometimes it works great and sometimes it answers something random or too general.
