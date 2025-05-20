@@ -3,8 +3,12 @@ from langchain_core.vectorstores import VectorStore
 from langchain_text_splitters import  RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
+import jsonlines
 import os
 from langchain_community.vectorstores import FAISS
+
+# subsection headers for JSONL conversion
+section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -20,6 +24,8 @@ def load(path):
 
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(combined_text)
+
+    convert_to_JSONL(documents)
 
     return documents
 
@@ -38,3 +44,33 @@ def get_vectorstore() -> VectorStore:
     model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
     embedding = HuggingFaceEmbeddings(model_name=model)
     return FAISS.from_documents(chunks, embedding)
+
+def convert_to_JSONL(documents):
+
+    all_text = "\n".join(doc.page_content for doc in documents)
+    lines = all_text.split("\n")
+    entries = []
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        if line in section_markers:
+            entry = {"type": line}
+            if i + 1 < len(lines):
+                entry["title"] = lines[i + 1].strip()
+            else:
+                entry["title"] = ""
+
+            # collect content until the next marker or end
+            content_lines = []
+            i += 2  # skip current marker and title
+            while i < len(lines) and lines[i].strip() not in section_markers:
+                content_lines.append(lines[i].strip())
+                i += 1
+            entry["content"] = "\n".join(content_lines).strip()
+            entries.append(entry)
+        else:
+            i += 1
+
+    with jsonlines.open("converted_doc.jsonl", mode="w") as writer:
+        for entry in entries:
+            writer.write(entry)
