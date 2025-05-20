@@ -104,3 +104,10 @@ Quality of answers is similiar to the previous version but for some reason it ra
 One thing to note is when asking about something general it often quotes something random from the document and then adds the answer to the question at the end.
 
 Memory is hit or miss in both versions, sometimes it works great and sometimes it answers something random or too general.
+
+### Sprint 3
+
+Added conversion of PDF to JSONL format. I utilized the headers "Untergruppentext", "Modultext", "Einführungstext" to determine the content of each JSONl line.
+Currently I am saving the type of text, the title and the content. 
+
+One thing to note about the PDF is that a section has most of the time a main section, a few subsections and finally art examples with artists. Breaking it down further like this for JSONL doesn't seem really beneficial but it might be very beneficial for a graph based approach. Maybe something to consider.
