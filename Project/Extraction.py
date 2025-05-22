@@ -9,6 +9,9 @@ from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
 section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
+chunk_size = 650
+chunk_overlap = 70
+embedding_model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -30,8 +33,8 @@ def load(path):
     return documents
 
 def split_documents(documents: list[Document]) -> list[Document]:
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=650,
-                                                   chunk_overlap=70,
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
+                                                   chunk_overlap=chunk_overlap,
                                                    length_function=len,
                                                    is_separator_regex=False)
     return text_splitter.split_documents(documents)
@@ -41,8 +44,7 @@ def get_vectorstore() -> VectorStore:
     documents = load(path)
 
     chunks = split_documents(documents)
-    model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
-    embedding = HuggingFaceEmbeddings(model_name=model)
+    embedding = HuggingFaceEmbeddings(model_name=embedding_model)
     return FAISS.from_documents(chunks, embedding)
 
 def convert_to_JSONL(documents):

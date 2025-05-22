@@ -1,6 +1,14 @@
 import unittest
 import Extraction
-
+import os
+import json
+import random
+import datetime
+import Evaluation
+import Chatting
+from datasets import Dataset
+from langchain_huggingface import HuggingFaceEmbeddings
+import pandas as pd
 
 class RetrievalTesting(unittest.TestCase):
 
@@ -29,3 +37,137 @@ class RetrievalTesting(unittest.TestCase):
 
     def test_lexical_search(self):
         self.run_lexical_search("Welche Überlebensstrategien verwenden Tiere?", {"mimese", "mimikry"})
+
+    def test_rag_system(self):
+        """ Tests the RAG system with 2 questions from each category and saves the results to a csv file."""
+        if not os.path.exists("questions_and_answers.json"):
+            raise FileNotFoundError(f"Question/answer file not found at path: {"questions_and_answers.json"}")
+
+        with open("questions_and_answers.json", "r", encoding="utf-8") as f:
+            questions_and_answers = json.load(f)
+
+        # Prepare logs directory
+        llm = Chatting.llm
+        qa_chain = Chatting.qa_chain
+        memory = Chatting.memory
+        today = datetime.date.today().isoformat()
+        log_dir = os.path.join("logs", today)
+        os.makedirs(log_dir, exist_ok=True)
+
+        model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
+        embedding = HuggingFaceEmbeddings(model_name=model)
+
+        existing_files = [f for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
+        log_id = len(existing_files) + 1
+        csv_path = os.path.join(log_dir, f"rag_eval_{today}_{log_id}.csv")
+
+        categories = ['einfache_fragen', 'schwere_fragen', 'allgemeine_fragen']
+        all_preds = []
+        all_refs = []
+        ragas_dataset = []
+        results = []
+
+        metadata = {
+            "Test ID": log_id,
+            "Date": today,
+            "Chatbot model": Chatting.chat_model,
+            "Embedding model" : Extraction.embedding_model,
+            "Chunking size": Extraction.chunk_size,
+            "Chunking overlap" : Extraction.chunk_overlap,
+        }
+
+        for category in categories:
+            questions = questions_and_answers.get(category, [])
+            samples = random.sample(questions, min(2, len(questions)))
+
+            for item in samples:
+                question = item['frage']
+                reference = item['antwort']
+                result = qa_chain.invoke({
+                    "question": question,
+                    "chat_history": memory.chat_memory.messages
+                })
+
+                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
+
+                all_preds.append(prediction)
+                all_refs.append(reference)
+
+                ragas_dataset.append({
+                    "question": question,
+                    "ground_truth": reference,
+                    "answer": prediction
+                })
+
+                results.append({
+                    "Category": category,
+                    "Level": "",  # not applicable here
+                    "Question": question,
+                    "Ground Truth": reference,
+                    "Prediction": prediction
+                })
+
+        fragenpaare = questions_and_answers.get("fragenpaare", [])
+        fragenpaare_samples = random.sample(fragenpaare, min(2, len(fragenpaare)))
+
+        for pair in fragenpaare_samples:
+            for level in ["leicht", "schwer"]:
+                question = pair[level]
+                reference = pair["antwort"]
+                result = qa_chain.invoke({
+                    "question": question,
+                    "chat_history": memory.chat_memory.messages
+                })
+
+                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
+
+                all_preds.append(prediction)
+                all_refs.append(reference)
+
+                ragas_dataset.append({
+                    "question": question,
+                    "ground_truth": reference,
+                    "answer": prediction
+                })
+
+                results.append({
+                    "Category": "fragenpaare",
+                    "Level": level,
+                    "Question": question,
+                    "Ground Truth": reference,
+                    "Prediction": prediction
+                })
+
+        ragas_dataset = Dataset.from_list(ragas_dataset)
+
+        # Evaluate with full set
+        bertscore_result = Evaluation.evaluate_bertscore(all_preds, all_refs)
+        ragas_result = Evaluation.evaluate_ragas(llm, ragas_dataset, embedding)
+        ragas_df = ragas_result.to_pandas()
+        # Filter out columns that are non-metrics (e.g. strings)
+        ragas_score_columns = ragas_df.select_dtypes(include=["number"]).columns
+
+        precisions = bertscore_result["precision"].tolist()
+        recalls = bertscore_result["recall"].tolist()
+        f1s = bertscore_result["f1"].tolist()
+
+        for i, r in enumerate(results):
+            # BERTScore per row
+            r["BERTScore_Precision"] = round(precisions[i], 5)
+            r["BERTScore_Recall"] = round(recalls[i], 5)
+            r["BERTScore_F1"] = round(f1s[i], 5)
+
+            # RAGAS scores per row
+            for column in ragas_score_columns:
+                r[f"RAGAS_{column.replace('_', ' ').title().replace(' ', '')}"] = round(ragas_df.iloc[i][column], 5)
+
+        df = pd.DataFrame(results)
+        # Insert metadata rows at the top
+        meta_rows = [{"Category": f"# {key}", "Question": str(value)} for key, value in metadata.items()]
+        meta_df = pd.DataFrame(meta_rows)
+        final_df = pd.concat([meta_df, pd.DataFrame([{}]), df], ignore_index=True)
+
+        # Save to CSV
+        final_df.to_csv(csv_path, index=False, encoding='utf-8-sig')
+
+        print(f" Evaluation CSV saved to: {csv_path}")

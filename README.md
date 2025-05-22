@@ -111,3 +111,13 @@ Added conversion of PDF to JSONL format. I utilized the headers "Untergruppentex
 Currently I am saving the type of text, the title and the content. 
 
 One thing to note about the PDF is that a section has most of the time a main section, a few subsections and finally art examples with artists. Breaking it down further like this for JSONL doesn't seem really beneficial but it might be very beneficial for a graph based approach. Maybe something to consider.
+
+---
+
+Added evaluation scores for BERT and RAGAS testing. BERT is widespread but has problems with very short dialog which is why I also implemented LLM based testing with RAGAS. The RAGAS paper has around 190 citations which should probably be enough for scientific purposes. Another alternative was the langchain evaluation but I could not get it to work locally properly. I also looked at some other standardised metrics like BLEU but I am not sure how suited those are since they mostly check for either linguistic consistency (e.g. grammar mistakes) or direct overlap with the groundtruth. But I think RAGAS has a option to add some of these.
+
+Added a unittest for these two. It takes randomly 2 questions from each category and evaluates them. The results are saved to a CSV file in the logs folder (by date). I also added some extendable metadata at the top to see the setting used in that run. 
+
+Scores are currently a bit weird and the answers still need a lot of refinement as well.
+
+I also want to add some automatically updated graph in the future to show progress over the last x logs (averaged).

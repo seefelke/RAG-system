@@ -10,7 +10,8 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
 from langchain_core.messages import AIMessage, HumanMessage
 
-llm = ChatOllama(model="mistral")
+chat_model = "mistral"
+llm = ChatOllama(model=chat_model)
 retriever = Extraction.get_vectorstore().as_retriever()
 
 # Reformulates the current user question based on chat history if needed to give history context
@@ -58,15 +59,15 @@ rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chai
 
 rag_chain_simple = create_retrieval_chain(retriever, question_answer_chain)
 
-chat_history = []
-
 # Alternative system
 
 prompt_template = PromptTemplate(
             template=(
-                "Du bist ein deutscher Helfer um Fragen in einem Museum zu beantworten. "
-                "Antworte kurz und präzise in gesprochenem Stil und versuche dich auf maximal 3 Sätze zu beschränken."
-                "Nutze den folgenden Kontext zur Museums Ausstellung um die Fragen zu benatworten.\n\n"
+                "Du bist ein Helfer um Fragen in einem Museum zu beantworten. "
+                "Antworte im Dialog kurz und präzise in gesprochener Sprache und versuche dich auf wenige Sätze zu "
+                "beschränken."
+                "Antworte immer nur auf deutsch"
+                "Nutze den folgenden Kontext zur Museums Ausstellung um die Fragen zu beantworten.\n\n"
                 "Kontext:\n{context}\n\n"
                 "Verlauf:\n{chat_history}\n\n"
                 "Frage:\n{question}\n\n"
@@ -76,7 +77,7 @@ prompt_template = PromptTemplate(
 
 
 memory = ConversationBufferWindowMemory(
-    k=5,  # number of conversation turns (or messages) to keep
+    k=5,  # Number of conversation turns (or messages) to keep
     memory_key="chat_history",
     return_messages=True
 )
@@ -88,19 +89,21 @@ qa_chain = ConversationalRetrievalChain.from_llm(
 )
 
 
-while True:
-    query = input("\nStelle eine Frage (oder 'exit'): ")
-    if query.lower() == "exit":
-        break
-    #result = rag_chain.invoke({"input": query, "chat_history": chat_history})
-    result = qa_chain.invoke({"question": query,
-                                   "chat_history": memory.chat_memory.messages})
-    chat_history.extend(
-        [
-            HumanMessage(content=query),
-            AIMessage(content=result["answer"]),
-        ])
-    print("\nAntwort:", result["answer"])
+def continuous_chatting(rag_chain):
+    while True:
+        chat_history = []
+        query = input("\nStelle eine Frage (oder 'exit'): ")
+        if query.lower() == "exit":
+            break
+        result = rag_chain.invoke({"input": query, "chat_history": chat_history})
+        #result = qa_chain.invoke({"question": query,
+        #                               "chat_history": memory.chat_memory.messages})
+        chat_history.extend(
+            [
+                HumanMessage(content=query),
+                AIMessage(content=result["answer"]),
+            ])
+        print("\nAntwort:", result["answer"])
 
 
 def single_Query(query):
