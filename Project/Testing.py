@@ -9,6 +9,7 @@ import Chatting
 from datasets import Dataset
 from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class RetrievalTesting(unittest.TestCase):
 
@@ -162,6 +163,17 @@ class RetrievalTesting(unittest.TestCase):
                 r[f"RAGAS_{column.replace('_', ' ').title().replace(' ', '')}"] = round(ragas_df.iloc[i][column], 5)
 
         df = pd.DataFrame(results)
+        avg_row = df.select_dtypes(include='number').mean().to_dict()
+
+        for col in df.columns:
+            if col == "Category":
+                avg_row[col] = "Average"
+            elif col not in avg_row:
+                avg_row[col] = "-"
+
+        avg_df = pd.DataFrame([avg_row])
+        df = pd.concat([df, avg_df], ignore_index=True)
+
         # Insert metadata rows at the top
         meta_rows = [{"Category": f"# {key}", "Question": str(value)} for key, value in metadata.items()]
         meta_df = pd.DataFrame(meta_rows)
@@ -170,4 +182,59 @@ class RetrievalTesting(unittest.TestCase):
         # Save to CSV
         final_df.to_csv(csv_path, index=False, encoding='utf-8-sig')
 
+        self.update_average_graph()
+
         print(f" Evaluation CSV saved to: {csv_path}")
+
+
+    def update_average_graph(self):
+        N = 20
+        # Collect all CSV paths
+        csv_files = []
+        for root, dirs, files in os.walk("logs"):
+            for file in files:
+                if file.endswith(".csv"):
+                    path = os.path.join(root, file)
+                    mod_time = os.path.getmtime(path)
+                    csv_files.append((mod_time, path))
+
+        csv_files = sorted(csv_files, key=lambda x: x[0], reverse=True)[:N]
+
+        # Extract average rows
+        avg_rows = []
+        timestamps = []
+
+        for _, path in reversed(csv_files):
+            try:
+                df = pd.read_csv(path)
+                avg_row = df[df.iloc[:, 0] == "Average"]
+                if not avg_row.empty:
+                    avg_row = avg_row.select_dtypes(include="number")
+                    avg_row["log_file"] = os.path.basename(path)
+                    avg_rows.append(avg_row)
+                    timestamps.append(datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime("%Y-%m-%d %H:%M"))
+            except Exception as e:
+                print(f"Skipping {path}: {e}")
+
+        if avg_rows:
+            avg_df = pd.concat(avg_rows, ignore_index=True)
+            avg_df["Timestamp"] = timestamps
+
+            avg_df.set_index("Timestamp", inplace=True)
+            avg_df.drop(columns=["log_file"], inplace=True, errors="ignore")
+
+            # Plot
+            plt.figure(figsize=(12, 6))
+            avg_df.plot(marker='o', figsize=(14, 7))
+            plt.title(f"Average Metrics over Last {len(avg_df)} Runs")
+            plt.xlabel("Run Timestamp")
+            plt.ylabel("Score")
+            plt.ylim(0, 1.05)
+            plt.grid(True)
+            plt.legend(loc="best")
+            plt.tight_layout()
+
+            graph_path = os.path.join("logs", "summary_graph.png")
+            plt.savefig(graph_path)
+            print("Graph saved to {graph_path}")
+            plt.close()

@@ -121,3 +121,7 @@ Added a unittest for these two. It takes randomly 2 questions from each category
 Scores are currently a bit weird and the answers still need a lot of refinement as well.
 
 I also want to add some automatically updated graph in the future to show progress over the last x logs (averaged).
+
+---
+
+Added graph to summarize last n runs.
