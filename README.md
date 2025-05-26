@@ -1,6 +1,6 @@
 # Master Thesis RAG
 
-
+![Performance Graph](Project/logs/summary_graph.png)
 
 ## Sprint 1
 
