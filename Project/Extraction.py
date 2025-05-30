@@ -5,6 +5,8 @@ from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 import jsonlines
 import os
+from pinecone import  Pinecone
+from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
@@ -12,6 +14,9 @@ section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
 chunk_size = 650
 chunk_overlap = 70
 embedding_model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
+pinecone_api_key = os.environ.get('PINECONE_API_KEY')
+index_name = "langchain-index"
+store_type = "PINECONE"
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -42,10 +47,13 @@ def split_documents(documents: list[Document]) -> list[Document]:
 def get_vectorstore() -> VectorStore:
     path = "PDF"
     documents = load(path)
-
-    chunks = split_documents(documents)
     embedding = HuggingFaceEmbeddings(model_name=embedding_model)
-    return FAISS.from_documents(chunks, embedding)
+    chunks = split_documents(documents)
+    if store_type == "FAISS":
+        vectorstore = FAISS.from_documents(chunks, embedding)
+    else:
+        vectorstore = PineconeVectorStore.from_documents(chunks, index_name=index_name, embedding=embedding)
+    return vectorstore
 
 def convert_to_JSONL(documents):
 

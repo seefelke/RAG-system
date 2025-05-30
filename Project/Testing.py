@@ -73,6 +73,7 @@ class RetrievalTesting(unittest.TestCase):
             "Date": today,
             "Chatbot model": Chatting.chat_model,
             "Embedding model" : Extraction.embedding_model,
+            "Vectorstore" : Extraction.store_type,
             "Chunking size": Extraction.chunk_size,
             "Chunking overlap" : Extraction.chunk_overlap,
         }
