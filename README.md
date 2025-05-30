@@ -1,6 +1,6 @@
 # Master Thesis RAG
 
-
+![Performance Graph](Project/logs/summary_graph.png)
 
 ## Sprint 1
 
@@ -125,3 +125,5 @@ I also want to add some automatically updated graph in the future to show progre
 ---
 
 Added graph to summarize last n runs.
+
+BLEURT is also a metric that could be very useful and is widepsread for NLG tasks. I probably should also add some context retrieval metrics.
