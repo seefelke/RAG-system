@@ -127,3 +127,11 @@ I also want to add some automatically updated graph in the future to show progre
 Added graph to summarize last n runs.
 
 BLEURT is also a metric that could be very useful and is widepsread for NLG tasks. I probably should also add some context retrieval metrics.
+
+### Sprint 4
+
+Added Pinecone and openAI options.
+
+Added retrieval metrics Context Precision and Faithfullness. Looked more into other options like BLEURT but they all only work with English. Found one option Comet that is used for translation and paraphrasing purposes so that could technically work if it is needed.
+
+Updated QA file.
