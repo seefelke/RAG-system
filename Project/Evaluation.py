@@ -1,7 +1,7 @@
 from bert_score import score as bertscore
 
 from ragas import evaluate
-from ragas.metrics import AnswerAccuracy
+from ragas.metrics import AnswerAccuracy, ContextPrecision, Faithfulness
 from ragas.llms import LangchainLLMWrapper
 
 def evaluate_bertscore(preds, refs):
@@ -15,9 +15,11 @@ def evaluate_bertscore(preds, refs):
 def evaluate_ragas(llm, dataset, embedding):
     llm = LangchainLLMWrapper(llm)
     answer_accuracy = AnswerAccuracy(llm = llm)
+    context_precision = ContextPrecision(llm = llm)
+    faithfulness = Faithfulness(llm = llm)
     result = evaluate(
         dataset=dataset,
-        metrics=[answer_accuracy],
+        metrics=[answer_accuracy, context_precision, faithfulness],
         llm=llm,
         embeddings=embedding
     )

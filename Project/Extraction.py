@@ -11,8 +11,8 @@ from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
 section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
-chunk_size = 650
-chunk_overlap = 70
+chunk_size = 500
+chunk_overlap = 80
 embedding_model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
 pinecone_api_key = os.environ.get('PINECONE_API_KEY')
 index_name = "langchain-index"

@@ -89,16 +89,17 @@ class RetrievalTesting(unittest.TestCase):
                     "question": question,
                     "chat_history": memory.chat_memory.messages
                 })
-
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-
+                sources = result.get('source_documents', [])
+                contexts = [doc.page_content for doc in sources]
                 all_preds.append(prediction)
                 all_refs.append(reference)
 
                 ragas_dataset.append({
                     "question": question,
                     "ground_truth": reference,
-                    "answer": prediction
+                    "answer": prediction,
+                    "contexts": contexts
                 })
 
                 results.append({
@@ -122,14 +123,16 @@ class RetrievalTesting(unittest.TestCase):
                 })
 
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-
+                sources = result.get('source_documents', [])
+                contexts = [doc.page_content for doc in sources]
                 all_preds.append(prediction)
                 all_refs.append(reference)
 
                 ragas_dataset.append({
                     "question": question,
                     "ground_truth": reference,
-                    "answer": prediction
+                    "answer": prediction,
+                    "contexts": contexts
                 })
 
                 results.append({

@@ -9,28 +9,28 @@
       "antwort": "Mimese ist das Anpassen des Aussehens an den Lebensraum, wie bei Schmetterlingen, die vertrockneten Blättern ähneln."
     },
     {
-      "frage": "Warum ist der Frischling gut getarnt?",
-      "antwort": "Wegen seines gestreiften Fells, das ihn im Waldboden verschwimmen lässt."
+      "frage": "Wozu wurde die Höhensonne ursprünglich genutzt?",
+      "antwort": "Zur medizinischen Behandlung von Haut- und Mangelerkrankungen durch künstliche UV-Strahlung."
     },
     {
       "frage": "Was ist der Vorteil von Kunstseide gegenüber echter Seide?",
       "antwort": "Kunstseide ist pflegeleichter und unempfindlicher."
     },
     {
-      "frage": "Warum wurde der Kleppermantel zum Statussymbol?",
-      "antwort": "Aufgrund seiner Innovation und weiten Verbreitung, besonders ab den 1950er-Jahren."
+      "frage": "Was wurde nach dem Krieg aus alten Stahlhelmen gemacht?",
+      "antwort": "Aus ihnen wurden unter anderem Nudelsiebe und Kochtöpfe hergestellt."
     },
     {
-      "frage": "Was bedeutet Konterschattierung bei Tieren?",
-      "antwort": "Die Fellfärbung tarnt Tiere gleichzeitig von oben und unten, z.B. Eichhörnchen."
+      "frage": "Warum sind Fake News gefährlich?",
+      "antwort": "Sie können Meinungen beeinflussen, zu falschen Entscheidungen führen und Vertrauen in Medien untergraben."
     },
     {
-      "frage": "Wie schützt sich das Rehkitz vor Raubtieren?",
-      "antwort": "Durch seine punktierte Fellfärbung und fehlenden Eigengeruch."
+      "frage": "Warum wurde Fanta im Zweiten Weltkrieg erfunden?",
+      "antwort": "Weil Coca-Cola nicht mehr importiert werden durfte, entwickelte man Fanta aus Molke und Apfelresten."
     },
     {
-      "frage": "Welche Strategien der Täuschung nutzen Tiere?",
-      "antwort": "Mimese, Mimikry und Konterschattierung."
+      "frage": "Was ist ein Kleppermantel?",
+      "antwort": "Der Kleppermantel ist ein wetterfester Faltmantel, der ursprünglich als technisches Imitat konzipiert wurde. Durch geschicktes Marketing und hohe Funktionalität wurde er zum Statussymbol der 1950er-Jahre."
     },
     {
       "frage": "Was ist Kunstleder?",
@@ -45,22 +45,22 @@
     {
       "leicht": "Warum sehen manche Schwebfliegen wie Wespen aus?",
       "schwer": "Welche ökologische Strategie steht hinter der Warntracht harmloser Insektenarten?",
-      "antwort": "Mimikry."
+      "antwort": "Hierbei handelt es sich um Mimikry. Das Nachahmen anderer Tiere dient dazu feindselige Tiere oder potenzielle Beute zu täuschen."
     },
     {
       "leicht": "Was machen Schmetterlinge, um sich zu tarnen?",
       "schwer": "Wie wird die morphologische Umweltanpassung bei Tieren wissenschaftlich bezeichnet?",
-      "antwort": "Mimese."
+      "antwort": "Hierbei handelt es sich um Mimese. Das Anpassen an die Umgebung, beispielsweise durch Färbungen, dient zur Tarnung um andere Tiere zu täuschen."
     },
     {
-      "leicht": "Warum wechselt das Große Wiesel im Winter seine Fellfarbe?",
-      "schwer": "Wie nennt man eine saisonale morphologische Anpassung an unterschiedliche Hintergrundbedingungen?",
-      "antwort": "Tarnung durch Fellfarbe."
+      "leicht": "Was ist Stuckmarmor?",
+      "schwer": "Inwiefern übertrifft Stuckmarmor in seinen gestalterischen Möglichkeiten das Naturvorbild?",
+      "antwort": "Stuckmarmor ist ein künstlich hergestellter Imitatmarmor aus Gips, Leimwasser und Pigmenten. Er lässt sich leichter formen und bietet bei der Farbgestaltung mehr kreative Möglichkeiten als echter Marmor."
     },
     {
-      "leicht": "Was ist das Besondere an der Fellfärbung des Eichhörnchens?",
-      "schwer": "Welche optische Schutzstrategie wird durch unterschiedlich gefärbte Körperseiten verwirklicht?",
-      "antwort": "Konterschattierung."
+      "leicht": "Wozu tragen Menschen künstliche Wimpern oder Perücken?",
+      "schwer": "Wie reflektieren kosmetische Körperimitate gesellschaftliche Erwartungen an Schönheit und Identität?",
+      "antwort": "Künstliche Wimpern, Perücken und Epithesen dienen nicht nur der Verschönerung oder Kompensation körperlicher Verluste, sondern spiegeln auch gesellschaftliche Schönheitsideale und den Wunsch nach Normalität wider."
     },
     {
       "leicht": "Was konnte man mit Kunstfasern wie Kunstseide nachahmen?",
@@ -68,24 +68,24 @@
       "antwort": "Herstellung von Imitaten wie Kunstseide."
     },
     {
-      "leicht": "Warum war der Kleppermantel so beliebt?",
-      "schwer": "Welches Beispiel zeigt frühe markenrechtliche Abgrenzung von Imitaten?",
-      "antwort": "Kleppermantel."
+      "leicht": "Was ist ein Deepfake?",
+      "schwer": "Inwiefern stellen gefälschte Medien eine neue Dimension der Fälschung in gesellschaftlicher Kommunikation dar?",
+      "antwort": "Ein Deepfake ist eine mit KI manipulierte Medienproduktion – etwa Video oder Audio – die so echt wirkt, dass sie kaum als Fälschung zu erkennen ist. Diese Technik ermöglicht gezielte Desinformation, untergräbt Vertrauen in mediale Inhalte und stellt damit eine erhebliche Herausforderung für Medienkompetenz und Demokratie dar."
     },
     {
-      "leicht": "Warum sieht man Rehkitze so schlecht?",
-      "schwer": "Welche Rolle spielen olfaktorische und visuelle Faktoren in der Jungtier-Tarnung?",
-      "antwort": "Tarnung durch Fell und Geruchslosigkeit."
+      "leicht": "Was war die Konstantinische Schenkung?",
+      "schwer": "Warum hatte die Aufdeckung der Konstantinischen Schenkung als Fälschung erhebliche historische und politische Folgen?",
+      "antwort": "Die Konstantinische Schenkung war ein gefälschtes Dokument, das dem Papst umfassende weltliche Macht zuschrieb. Sie wurde im 15. Jahrhundert als Fälschung entlarvt. Ihre jahrhundertelange Nutzung als Legitimation päpstlicher Herrschaft hatte massiven Einfluss auf die Machtverhältnisse in Europa. Ihre Entlarvung war ein bedeutender Schritt in der Trennung weltlicher und geistlicher Autorität."
     },
     {
-      "leicht": "Welche Farbe hat das Tarnmuster der Kreuzotter?",
-      "schwer": "Wie beeinflusst das Zickzackmuster die optische Wahrnehmung der Körperkonturen?",
-      "antwort": "Tarnung durch Musterauflösung."
+      "leicht": "Was ist eine Produktfälschung?",
+      "schwer": "In welchem Spannungsfeld stehen Produktpiraterie und künstlerisches Talent in Bezug auf gesellschaftliche Anerkennung?",
+      "antwort": "Produktfälschungen sind illegale Nachbildungen geschützter Marken oder Designs. Obwohl sie verboten sind, erfordern sie oft handwerkliches Können – wie etwa bei Kunstfälschungen – und bewegen sich deshalb im Spannungsfeld zwischen Verbrechen und Bewunderung."
     },
     {
-      "leicht": "Warum ist die Erdkröte schwer zu sehen?",
-      "schwer": "Welche biologischen Eigenschaften unterstützen das Tarnverhalten bodennaher Amphibien?",
-      "antwort": "Farb- und Strukturmimik."
+      "leicht": "Warum wurden viele religiöse Objekte aus Messing statt Gold gefertigt?",
+      "schwer": "Welche religiöse Haltung rechtfertigt den bewussten Einsatz günstiger Imitate anstelle von Edelmetallen?",
+      "antwort": "Im Zisterzienserorden galt materielle Genügsamkeit als Tugend. Statt Gold verwendete man Messing oder Blattvergoldung, um Demut auszudrücken – mit Ausnahme von Objekten für Leib und Blut Christi, die aus echtem Gold und Silber bestehen mussten."
     },
     {
       "leicht": "Warum gibt es heute so viele Luxusimitate?",
@@ -113,6 +113,22 @@
     {
       "frage": "Wie lässt sich der Wandel vom funktionalen Ersatzstoff zur kulturell akzeptierten Designalternative am Beispiel von Kunststoff nachvollziehen?",
       "antwort": "Kunststoff entwickelte sich vom billigen Imitat zu einem vielseitigen, anerkannten Designmaterial, das nicht nur Originale kopierte, sondern auch neue Gestaltungsspielräume eröffnete."
+    },
+    {
+      "frage": "Wie unterscheiden sich legitime Kopien von rechtswidrigen Fälschungen im wirtschaftlichen und rechtlichen Kontext?",
+      "antwort": "Legitime Kopien wie Replikate oder Faksimiles werden offen als solche bezeichnet und dienen oft der Bewahrung oder Verbreitung von Originalen, z.B. im Museumskontext. Sobald jedoch eine Kopie als Original ausgegeben wird, wird sie zur Fälschung. In wirtschaftlicher Hinsicht unterlaufen Fälschungen nicht nur Schutzrechte, sondern schöpfen auch den Ruf und den Preis des Originals aus, ohne dessen Entwicklungs- oder Marktkosten zu tragen. Rechtlich können sie als Urheberrechtsverletzung, Produktpiraterie oder Markenrechtsbruch verfolgt werden."
+    },{
+      "frage": "Welche sozialen und psychologischen Aspekte spiegeln sich in der Beliebtheit und Verbreitung von Fälschungen wider?",
+      "antwort": "Fälschungen bedienen oft das Bedürfnis nach Status, Zugehörigkeit oder Sparsamkeit. Bei „Autobahngold“ geht es um die Illusion von Luxus zu günstigen Preisen. Gleichzeitig zeigt der Fall Beltracchi, dass auch Hochkultur nicht immun gegen Täuschung ist – Käufer wurden nicht nur wegen der Kunstwerke selbst getäuscht, sondern auch wegen des Prestigegewinns durch deren vermeintlichen Besitz."
+    },{
+      "frage": "Welche Rolle spielt die Nachahmung von Lebensmitteln in der Geschichte und Gegenwart für kulturelle Identität und künstlerischen Ausdruck?",
+      "antwort": "Schon in der Renaissance dienten Schaugerichte als Statussymbole und als Ausdruck künstlerischer Kochkunst. Diese wurden später durch keramische Nachbildungen ersetzt – ein Zeichen der Aufwertung des visuellen Genusses gegenüber dem kulinarischen. In der Gegenwart erleben wir eine neue Dimension durch hyperrealistische Kuchen oder Filzlebensmittel, wie bei Textilkünstlerin Mimi Saalfrank oder der Netflix-Serie Is it cake?. Diese Phänomene spiegeln sowohl ein spielerisches Verhältnis zur Realität als auch eine ästhetische Reflexion von Konsumverhalten und Identität wider."
+    },{
+      "frage": "In welchem Verhältnis stehen technologische Innovationen wie Künstliche Intelligenz zu historischen Täuschungspraktiken, insbesondere im Hinblick auf Manipulation und Information?",
+      "antwort": "Künstliche Intelligenz eröffnet neue Dimensionen der Imitation, indem sie Inhalte generiert, die nicht mehr eindeutig als echt oder falsch identifizierbar sind. Sie bringt somit die jahrhundertealte Praxis der Täuschung – etwa bei Schaugerichten oder gefälschten Objekten – auf eine digitale, globale Ebene. Ein weiteres Beispiel sind Fake News welche gezielt Aufmerksamkeit generieren. Die Relevanz liegt hierbei nicht nur in der visuellen Imitation, sondern in der psychologischen Beeinflussung von Menschen wie Kaufentscheidungen oder politische Überzeugungen."
+    },{
+      "frage": "Wie verschiebt sich die Bewertung von Materialwert und Handwerkskunst anhand religiöser Objekte aus dem Zisterzienserkloster?",
+      "antwort": "In der Zisterzienserkultur wurden schlichte, günstige Materialien wie Messing, Glassteine und Keramik bevorzugt, um eine demütige Lebensweise auszudrücken. Obwohl kein echter Goldschmuck verwendet wurde, war die Fertigung dieser Objekte aufwendig und handwerklich anspruchsvoll. Nur die Gefäße für Hostien und Messwein bestehen liturgisch bedingt aus echtem Gold und Silber. Diese bewusste Unterscheidung verdeutlicht, dass im religiösen Kontext symbolischer und spiritueller Wert über materiellem Reichtum stehen kann – ein Kontrast zur Konsumkultur, wo häufig das Gegenteil gilt."
     }
   ],
   "allgemeine_fragen": [
