@@ -1,12 +1,12 @@
 import unittest
 import Extraction
-import os
 import json
 import random
 import datetime
 import Evaluation
 import Chatting
 from datasets import Dataset
+from config import *
 from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -72,10 +72,10 @@ class RetrievalTesting(unittest.TestCase):
             "Test ID": log_id,
             "Date": today,
             "Chatbot model": Chatting.chat_model,
-            "Embedding model" : Extraction.embedding_model,
-            "Vectorstore" : Extraction.store_type,
-            "Chunking size": Extraction.chunk_size,
-            "Chunking overlap" : Extraction.chunk_overlap,
+            "Embedding model" : EMBEDDINGS,
+            "Vectorstore" : STORE_TYPE,
+            "Chunking size": CHUNK_SIZE,
+            "Chunking overlap" : CHUNK_OVERLAP,
         }
 
         for category in categories:

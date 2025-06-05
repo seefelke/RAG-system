@@ -1,6 +1,8 @@
-from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
+from langchain.chains import (
+    StuffDocumentsChain, LLMChain, ConversationalRetrievalChain
+)
 from langchain.memory import ConversationBufferWindowMemory
-import os
+from config import *
 import Extraction
 from langchain_ollama import ChatOllama
 from langchain.chains import RetrievalQA
@@ -9,12 +11,12 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.chains import create_history_aware_retriever
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import OpenAI
 
-use_openai = False
-chat_model = "mistral"
+use_openai = USE_OPENAI
+chat_model = MODEL_NAME
 if use_openai:
-    llm = ChatOpenAI(
+    llm = OpenAI(
         model_name="gpt-4.1-nano",
         temperature=0,
         openai_api_key=os.environ.get('OPENAI_API_KEY')
@@ -25,6 +27,7 @@ else:
 
 retriever = Extraction.get_vectorstore().as_retriever()
 
+# Alternative system, not used currently
 # Reformulates the current user question based on chat history if needed to give history context
 # (query, conversation history) -> LLM -> rephrased query -> retriever -> LLM
 history_prompt = (
@@ -70,7 +73,7 @@ retrieval_chain = create_retrieval_chain(history_aware_retriever, question_answe
 
 #rag_chain_simple = create_retrieval_chain(retriever, question_answer_chain)
 
-# Alternative system
+# Current system
 
 prompt_template = PromptTemplate(
     template=(
@@ -89,15 +92,16 @@ prompt_template = PromptTemplate(
 memory = ConversationBufferWindowMemory(
     k=5,  # Number of conversation turns (or messages) to keep
     memory_key="chat_history",
-    return_messages=True,
+    #return_messages=True,
     output_key="answer"
 )
+#question_generator_chain = LLMChain(llm=llm, prompt=prompt)
 qa_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
     memory=memory,
     combine_docs_chain_kwargs={"prompt": prompt_template},
-    return_source_documents=True,
+    return_source_documents=False,
     output_key="answer"
 )
 
@@ -117,15 +121,7 @@ def continuous_chatting(rag_chain):
                 AIMessage(content=result["answer"]),
             ])
         print("\nAntwort:", result["answer"])
-        print("\nSource:", result["source_documents"])
+        #print("\nSource:", result["source_documents"])
 
 
-def single_Query(query):
-    llm = ChatOllama(model="mistral")
-    retriever = Extraction.get_vectorstore().as_retriever()
-    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
-    result = qa_chain.invoke(query)
-    return result["result"]
-
-
-#continuous_chatting(qa_chain)
+continuous_chatting(qa_chain)

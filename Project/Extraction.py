@@ -4,19 +4,12 @@ from langchain_text_splitters import  RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 import jsonlines
-import os
-from pinecone import  Pinecone
+from config import *
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
 section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
-chunk_size = 500
-chunk_overlap = 80
-embedding_model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
-pinecone_api_key = os.environ.get('PINECONE_API_KEY')
-index_name = "langchain-index"
-store_type = "PINECONE"
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -38,8 +31,8 @@ def load(path):
     return documents
 
 def split_documents(documents: list[Document]) -> list[Document]:
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size,
-                                                   chunk_overlap=chunk_overlap,
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE,
+                                                   chunk_overlap=CHUNK_OVERLAP,
                                                    length_function=len,
                                                    is_separator_regex=False)
     return text_splitter.split_documents(documents)
@@ -47,12 +40,15 @@ def split_documents(documents: list[Document]) -> list[Document]:
 def get_vectorstore() -> VectorStore:
     path = "PDF"
     documents = load(path)
-    embedding = HuggingFaceEmbeddings(model_name=embedding_model)
+    if USE_OPENAI:
+        embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/distiluse-base-multilingual-cased-v2")
+    else:
+        embedding = HuggingFaceEmbeddings(model_name=EMBEDDINGS)
     chunks = split_documents(documents)
-    if store_type == "FAISS":
+    if STORE_TYPE == "FAISS":
         vectorstore = FAISS.from_documents(chunks, embedding)
     else:
-        vectorstore = PineconeVectorStore.from_documents(chunks, index_name=index_name, embedding=embedding)
+        vectorstore = PineconeVectorStore.from_documents(chunks, index_name=INDEX_NAME, embedding=embedding)
     return vectorstore
 
 def convert_to_JSONL(documents):
