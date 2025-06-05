@@ -1,15 +1,17 @@
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_core.vectorstores import VectorStore
-from langchain_text_splitters import  RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 import jsonlines
+from pinecone import ServerlessSpec, Pinecone
 from config import *
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
 section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
+
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -30,6 +32,7 @@ def load(path):
 
     return documents
 
+
 def split_documents(documents: list[Document]) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE,
                                                    chunk_overlap=CHUNK_OVERLAP,
@@ -37,22 +40,27 @@ def split_documents(documents: list[Document]) -> list[Document]:
                                                    is_separator_regex=False)
     return text_splitter.split_documents(documents)
 
+
 def get_vectorstore() -> VectorStore:
     path = "PDF"
     documents = load(path)
+    pc = Pinecone(api_key=PINECONE_API_KEY)
+    dim = 512
     if USE_OPENAI:
-        embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/distiluse-base-multilingual-cased-v2")
+        dim = 1536
+        embedding = EMBEDDINGS
     else:
         embedding = HuggingFaceEmbeddings(model_name=EMBEDDINGS)
     chunks = split_documents(documents)
-    if STORE_TYPE == "FAISS":
+    if USE_FAISS:
         vectorstore = FAISS.from_documents(chunks, embedding)
     else:
+        ensure_index_exists(pc, INDEX_NAME, dim)
         vectorstore = PineconeVectorStore.from_documents(chunks, index_name=INDEX_NAME, embedding=embedding)
     return vectorstore
 
-def convert_to_JSONL(documents):
 
+def convert_to_JSONL(documents):
     all_text = "\n".join(doc.page_content for doc in documents)
     lines = all_text.split("\n")
     entries = []
@@ -80,3 +88,13 @@ def convert_to_JSONL(documents):
     with jsonlines.open("converted_doc.jsonl", mode="w") as writer:
         for entry in entries:
             writer.write(entry)
+
+
+def ensure_index_exists(pc, index_name: str, dimension: int):
+    if not pc.has_index(index_name):
+        pc.create_index(
+            name=index_name,
+            dimension=dimension,
+            metric="cosine",
+            spec=ServerlessSpec(cloud='aws', region='us-east-1')
+        )

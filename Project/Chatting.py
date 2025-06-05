@@ -115,11 +115,11 @@ def continuous_chatting(rag_chain):
         #result = rag_chain.invoke({"input": query, "chat_history": chat_history})
         result = rag_chain.invoke({"question": query,
                                    "chat_history": memory.chat_memory.messages})
-        chat_history.extend(
-            [
-                HumanMessage(content=query),
-                AIMessage(content=result["answer"]),
-            ])
+        #chat_history.extend(
+         #   [
+          #      HumanMessage(content=query),
+           #     AIMessage(content=result["answer"]),
+            #])
         print("\nAntwort:", result["answer"])
         #print("\nSource:", result["source_documents"])
 
