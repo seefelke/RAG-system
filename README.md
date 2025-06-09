@@ -50,7 +50,7 @@ Discussion chapter
 
 [19.8 - 26.8]
 
-Conclusion, Introduction, Abstract
+Finish Discussion if needed, start Conclusion, Introduction, Abstract
 
 [26.8 - 2.9]
 
