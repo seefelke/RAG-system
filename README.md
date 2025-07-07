@@ -2,6 +2,92 @@
 
 ![Performance Graph](Project/logs/summary_graph.png)
 
+## Thesis outline
+
+Literature Review:
+
+What is RAG? Why is it useful for this task? What similiar research has been done in similiar domains? What prior evaluations have been done?
+
+I don't plan to go very low level about RAG technical details since it should not be relevant for the evaluation and discussion, but not sure about this.
+
+Methodology:
+
+Describing the codebase, maybe frontend as well not sure about this one
+
+Evaluation:
+
+Describing the evaluation framework, e.g. automated testing, graphs, evaluation metrics, QA
+
+Results:
+
+Showing the results, showing influence of different parameters, models etc., listing outliers/special findings
+
+Discussion:
+
+Making sense of the results, discussing them in relevancy to the museum usecase, comparing to previously mentioned similiar research from literature review, highlighting remaining weaknesses for further research
+
+## Timeframe
+
+Weeks that might have unplanned work from the previous one are marked with an (!) since I am not sure about the time/scope requirement for these, I have planned enough buffer weeks at the end to accomodate for this.
+
+[10.6 - 17.6]
+
+Finishing framework (e.g. GPT)
+
+Continue with Literature Review
+
+[17.6 - 24.6]
+
+Finish Literature Review
+
+[24.6 - 1.7] (!)
+
+Start with Methodology
+
+[1.7 - 8.7]
+
+Continue with Methodology
+
+[8.7 - 15.7]
+
+Gather Data and take relevant notes and start Evaluation chapter
+
+[15.7 - 22.7]
+
+Gather remaining Data if needed and finish Evaluation chapter
+
+[22.7 - 29.7] (!)
+
+Start Results chapter
+
+[29.7 - 5.8]
+
+Develop frontend, finish Results
+
+[5.8 - 12.8]
+
+Finish frontend
+
+[12.8 - 19.8] (!)
+
+Discussion chapter
+
+[19.8 - 26.8]
+
+Finish Discussion if needed, start Conclusion, Introduction, Abstract
+
+[26.8 - 2.9]
+
+Conclusion, Introduction, Abstract
+
+[2.9 - 27.9]
+
+Thesis should be finished by now, remaining time is buffer and for finalising
+
+[23.9 - 27.9]
+
+Hand-in during this week
+
 ## Sprint 1
 
 Added initital vertex base generation and retrieval logic with langchain, huggingface and FAISS.
