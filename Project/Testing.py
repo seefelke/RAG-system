@@ -12,6 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 
+
 class RetrievalTesting(unittest.TestCase):
 
     def setUp(self):
@@ -51,7 +52,8 @@ class RetrievalTesting(unittest.TestCase):
         # Prepare logs directory
         llm = Chatting.llm
         qa_chain = Chatting.retrieval_chain
-        #memory = Chatting.memory.chat_memory.messages
+        #qa_chain = Chatting.qa_chain
+        memory = Chatting.memory
         today = datetime.date.today().isoformat()
         log_dir = os.path.join("logs", today)
         os.makedirs(log_dir, exist_ok=True)
@@ -73,11 +75,11 @@ class RetrievalTesting(unittest.TestCase):
             "Test ID": log_id,
             "Date": today,
             "Chatbot model": Chatting.chat_model,
-            "Embedding model" : EMBEDDINGS,
-            "Vectorstore" : STORE_TYPE,
+            "Embedding model": EMBEDDINGS,
+            "Vectorstore": STORE_TYPE,
             "Chunking size": CHUNK_SIZE,
-            "Chunking overlap" : CHUNK_OVERLAP,
-            "Additional notes" : EXTRA_NOTES,
+            "Chunking overlap": CHUNK_OVERLAP,
+            "Additional notes": EXTRA_NOTES,
         }
 
         for category in categories:
@@ -91,9 +93,11 @@ class RetrievalTesting(unittest.TestCase):
                 result = qa_chain.invoke({
                     "input": question
                 })
+                #result = qa_chain.invoke({"question": question,
+                 #                         "chat_history": memory.chat_memory.messages})
                 run_time = time.time() - start_time
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-                sources = result.get('source_documents', [])
+                sources = result.get('context', [])
                 contexts = [doc.page_content for doc in sources]
                 all_preds.append(prediction)
                 all_refs.append(reference)
@@ -111,6 +115,7 @@ class RetrievalTesting(unittest.TestCase):
                     "Question": question,
                     "Ground Truth": reference,
                     "Prediction": prediction,
+                    "Context": contexts,
                     "Time": run_time
                 })
 
@@ -123,11 +128,13 @@ class RetrievalTesting(unittest.TestCase):
                 reference = pair["antwort"]
                 start_time = time.time()
                 result = qa_chain.invoke({
-                    "input": question
+                   "input": question
                 })
+                #result = qa_chain.invoke({"question": question,
+                 #                         "chat_history": memory.chat_memory.messages})
                 run_time = time.time() - start_time
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-                sources = result.get('source_documents', [])
+                sources = result.get('context', [])
                 contexts = [doc.page_content for doc in sources]
                 all_preds.append(prediction)
                 all_refs.append(reference)
@@ -145,6 +152,7 @@ class RetrievalTesting(unittest.TestCase):
                     "Question": question,
                     "Ground Truth": reference,
                     "Prediction": prediction,
+                    "Context": contexts,
                     "Time": run_time
                 })
 
@@ -195,7 +203,6 @@ class RetrievalTesting(unittest.TestCase):
 
         print(f" Evaluation CSV saved to: {csv_path}")
 
-
     def update_average_graph(self):
         N = 20
         # Collect all CSV paths
@@ -221,7 +228,8 @@ class RetrievalTesting(unittest.TestCase):
                     avg_row = avg_row.select_dtypes(include="number")
                     avg_row["log_file"] = os.path.basename(path)
                     avg_rows.append(avg_row)
-                    timestamps.append(datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime("%Y-%m-%d %H:%M"))
+                    timestamps.append(
+                        datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime("%Y-%m-%d %H:%M"))
             except Exception as e:
                 print(f"Skipping {path}: {e}")
 

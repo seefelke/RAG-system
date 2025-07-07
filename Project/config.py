@@ -2,11 +2,11 @@ import os
 from langchain_openai import OpenAIEmbeddings
 
 USE_OPENAI = False
-USE_FAISS = False
+USE_FAISS = True
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 MODEL_NAME = "mistral"
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 700
+CHUNK_OVERLAP = 80
 if USE_FAISS:
     STORE_TYPE = "FAISS"
 else:

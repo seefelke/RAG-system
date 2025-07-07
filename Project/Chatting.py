@@ -54,7 +54,7 @@ system_prompt = (
     "Wenn der Kontext nicht zu der Frage passt und du nicht antworten kannst"
     "dann sag dass du dabei nicht helfen kannst."
     "\n\n"
-    "{context}"
+    "Context: {context}"
 )
 
 prompt = ChatPromptTemplate.from_messages(
