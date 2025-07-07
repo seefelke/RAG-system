@@ -10,6 +10,7 @@ from config import *
 from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 class RetrievalTesting(unittest.TestCase):
 
@@ -49,8 +50,8 @@ class RetrievalTesting(unittest.TestCase):
 
         # Prepare logs directory
         llm = Chatting.llm
-        qa_chain = Chatting.qa_chain
-        memory = Chatting.memory
+        qa_chain = Chatting.retrieval_chain
+        #memory = Chatting.memory.chat_memory.messages
         today = datetime.date.today().isoformat()
         log_dir = os.path.join("logs", today)
         os.makedirs(log_dir, exist_ok=True)
@@ -76,6 +77,7 @@ class RetrievalTesting(unittest.TestCase):
             "Vectorstore" : STORE_TYPE,
             "Chunking size": CHUNK_SIZE,
             "Chunking overlap" : CHUNK_OVERLAP,
+            "Additional notes" : EXTRA_NOTES,
         }
 
         for category in categories:
@@ -85,10 +87,11 @@ class RetrievalTesting(unittest.TestCase):
             for item in samples:
                 question = item['frage']
                 reference = item['antwort']
+                start_time = time.time()
                 result = qa_chain.invoke({
-                    "question": question,
-                    "chat_history": memory.chat_memory.messages
+                    "input": question
                 })
+                run_time = time.time() - start_time
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
                 sources = result.get('source_documents', [])
                 contexts = [doc.page_content for doc in sources]
@@ -107,7 +110,8 @@ class RetrievalTesting(unittest.TestCase):
                     "Level": "",  # not applicable here
                     "Question": question,
                     "Ground Truth": reference,
-                    "Prediction": prediction
+                    "Prediction": prediction,
+                    "Time": run_time
                 })
 
         fragenpaare = questions_and_answers.get("fragenpaare", [])
@@ -117,11 +121,11 @@ class RetrievalTesting(unittest.TestCase):
             for level in ["leicht", "schwer"]:
                 question = pair[level]
                 reference = pair["antwort"]
+                start_time = time.time()
                 result = qa_chain.invoke({
-                    "question": question,
-                    "chat_history": memory.chat_memory.messages
+                    "input": question
                 })
-
+                run_time = time.time() - start_time
                 prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
                 sources = result.get('source_documents', [])
                 contexts = [doc.page_content for doc in sources]
@@ -140,7 +144,8 @@ class RetrievalTesting(unittest.TestCase):
                     "Level": level,
                     "Question": question,
                     "Ground Truth": reference,
-                    "Prediction": prediction
+                    "Prediction": prediction,
+                    "Time": run_time
                 })
 
         ragas_dataset = Dataset.from_list(ragas_dataset)

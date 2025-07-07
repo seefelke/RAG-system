@@ -17,7 +17,7 @@ use_openai = USE_OPENAI
 chat_model = MODEL_NAME
 if use_openai:
     llm = OpenAI(
-        model_name="gpt-4.1-nano",
+        model_name="gpt-4o-mini-2024-07-18",
         temperature=0,
         openai_api_key=os.environ.get('OPENAI_API_KEY')
     )
@@ -65,13 +65,20 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+prompt_no_history = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
+)
+
 history_aware_retriever = create_history_aware_retriever(
     llm, retriever, history_template
 )
 question_answer_chain = create_stuff_documents_chain(llm, prompt)
-retrieval_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+retrieval_chain_history = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
-#rag_chain_simple = create_retrieval_chain(retriever, question_answer_chain)
+retrieval_chain = create_retrieval_chain(retriever, create_stuff_documents_chain(llm, prompt_no_history))
 
 # Current system
 
@@ -112,16 +119,16 @@ def continuous_chatting(rag_chain):
         query = input("\nStelle eine Frage (oder 'exit'): ")
         if query.lower() == "exit":
             break
-        #result = rag_chain.invoke({"input": query, "chat_history": chat_history})
-        result = rag_chain.invoke({"question": query,
-                                   "chat_history": memory.chat_memory.messages})
-        #chat_history.extend(
-         #   [
-          #      HumanMessage(content=query),
-           #     AIMessage(content=result["answer"]),
-            #])
+        result = rag_chain.invoke({"input": query, "chat_history": chat_history})
+        #result = rag_chain.invoke({"question": query,
+         #                          "chat_history": memory.chat_memory.messages})
+        chat_history.extend(
+            [
+                HumanMessage(content=query),
+                AIMessage(content=result["answer"]),
+            ])
         print("\nAntwort:", result["answer"])
         #print("\nSource:", result["source_documents"])
 
 
-continuous_chatting(qa_chain)
+#continuous_chatting(retrieval_chain_history)

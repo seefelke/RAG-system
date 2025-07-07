@@ -1,7 +1,7 @@
 import os
 from langchain_openai import OpenAIEmbeddings
 
-USE_OPENAI = True
+USE_OPENAI = False
 USE_FAISS = False
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 MODEL_NAME = "mistral"
@@ -20,3 +20,5 @@ if USE_OPENAI:
     INDEX_NAME = "openai-index-museum-thesis"
 else:
     INDEX_NAME = "langchain-index-museum-thesis"
+
+EXTRA_NOTES = "-"
