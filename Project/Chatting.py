@@ -21,7 +21,7 @@ if use_openai:
         temperature=0,
         openai_api_key=os.environ.get('OPENAI_API_KEY')
     )
-    chat_model = "gpt-4.1-nano"
+    chat_model = "gpt-4o-mini"
 else:
     llm = ChatOllama(model=chat_model)
 
