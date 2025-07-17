@@ -221,3 +221,7 @@ Added Pinecone and openAI options.
 Added retrieval metrics Context Precision and Faithfullness. Looked more into other options like BLEURT but they all only work with English. Found one option Comet that is used for translation and paraphrasing purposes so that could technically work if it is needed.
 
 Updated QA file.
+
+###
+
+Added initital mockup for frontend, need to refactor some backend stuff to connect it with everything
