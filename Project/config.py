@@ -20,5 +20,5 @@ if USE_OPENAI:
     INDEX_NAME = "openai-index-museum-thesis"
 else:
     INDEX_NAME = "langchain-index-museum-thesis"
-
+MODELS = ["Mistral", "GPT 4o Mini"]
 EXTRA_NOTES = "-"
