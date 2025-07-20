@@ -7,11 +7,12 @@ import jsonlines
 from pinecone import ServerlessSpec, Pinecone
 from config import *
 from langchain_pinecone import PineconeVectorStore
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # subsection headers for JSONL conversion
 section_markers = {"Untergruppentext", "Modultext", "Einführungstext"}
-
+embedding = None
 
 def load(path):
     loader = PyPDFDirectoryLoader(path)
@@ -42,13 +43,14 @@ def split_documents(documents: list[Document]) -> list[Document]:
 
 
 def get_vectorstore() -> VectorStore:
+    global embedding
     path = "PDF"
     documents = load(path)
     pc = Pinecone(api_key=PINECONE_API_KEY)
     dim = 512
     if USE_OPENAI:
         dim = 1536
-        embedding = EMBEDDINGS
+        embedding = OpenAIEmbeddings()
     else:
         embedding = HuggingFaceEmbeddings(model_name=EMBEDDINGS)
     chunks = split_documents(documents)

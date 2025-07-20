@@ -6,6 +6,8 @@ import datetime
 import Evaluation
 import Chatting
 from datasets import Dataset
+from langchain_openai import OpenAIEmbeddings
+import config
 from config import *
 from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
@@ -58,8 +60,7 @@ class RetrievalTesting(unittest.TestCase):
         log_dir = os.path.join("logs", today)
         os.makedirs(log_dir, exist_ok=True)
 
-        model = "sentence-transformers/distiluse-base-multilingual-cased-v2"
-        embedding = HuggingFaceEmbeddings(model_name=model)
+        embedding = Extraction.embedding
 
         existing_files = [f for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
         log_id = len(existing_files) + 1

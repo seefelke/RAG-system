@@ -25,62 +25,80 @@ if use_openai:
 else:
     llm = ChatOllama(model=chat_model)
 
-retriever = Extraction.get_vectorstore().as_retriever()
+retriever = None
 
-# Alternative system, not used currently
-# Reformulates the current user question based on chat history if needed to give history context
-# (query, conversation history) -> LLM -> rephrased query -> retriever -> LLM
-history_prompt = (
-    "Gegeben sind ein Chatverlauf und die letzte Nutzerfrage,"
-    "die sich möglicherweise auf den Kontext im Chatverlauf bezieht."
-    "Formuliere eine eigenständige Frage, die auch ohne den Chatverlauf verständlich ist."
-    "Beantworte die Frage NICHT, sondern formuliere sie nur um, falls nötig,"
-    "und gib sie andernfalls unverändert zurück."
-)
+history_aware_retriever = None
+question_answer_chain = None
+retrieval_chain_history = None
+retrieval_chain = None
 
-history_template = ChatPromptTemplate(
-    [
-        ("system", history_prompt),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-# System prompt to answer the actual (reformulated) user query
-
-system_prompt = (
-    "Du bist ein Helfer um Fragen in einem Museum zu beantworten. "
-    "Verwende den folgenden zusätzlichen Kontext um deine Antwort zu verbessern."
-    "Wenn der Kontext nicht zu der Frage passt und du nicht antworten kannst"
-    "dann sag dass du dabei nicht helfen kannst."
-    "\n\n"
-    "Context: {context}"
-)
-
-prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system_prompt),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-prompt_no_history = ChatPromptTemplate.from_messages(
-    [
-        ("system", system_prompt),
-        ("human", "{input}"),
-    ]
-)
-
-history_aware_retriever = create_history_aware_retriever(
-    llm, retriever, history_template
-)
-question_answer_chain = create_stuff_documents_chain(llm, prompt)
-retrieval_chain_history = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-
-retrieval_chain = create_retrieval_chain(retriever, create_stuff_documents_chain(llm, prompt_no_history))
 
 # Current system
+# System with history reformulates the current user question based on chat history
+# (query, conversation history) -> LLM -> rephrased query -> retriever -> LLM
+def setup_chatbot():
+    HISTORY_TEMPLATE = ChatPromptTemplate(
+        [
+            ("system", HISTORY_PROMPT),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+
+    PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+        [
+            ("system", SYSTEM_PROMPT),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+
+    PROMPT_TEMPLATE_NO_HISTORY = ChatPromptTemplate.from_messages(
+        [
+            ("system", SYSTEM_PROMPT),
+            ("human", "{input}"),
+        ]
+    )
+
+    history_aware_retriever = create_history_aware_retriever(
+        llm, retriever, HISTORY_TEMPLATE
+    )
+    question_answer_chain = create_stuff_documents_chain(llm, PROMPT_TEMPLATE)
+
+    global retrieval_chain_history
+    retrieval_chain_history = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+
+    global retrieval_chain
+    retrieval_chain = create_retrieval_chain(retriever, create_stuff_documents_chain(llm, PROMPT_TEMPLATE_NO_HISTORY))
+
+
+def setup_vectorbase():
+    global retriever
+    retriever = Extraction.get_vectorstore().as_retriever()
+
+
+def continuous_chatting(rag_chain):
+    while True:
+        chat_history = []
+        query = input("\nStelle eine Frage (oder 'exit'): ")
+        if query.lower() == "exit":
+            break
+        result = rag_chain.invoke({"input": query, "chat_history": chat_history})
+        #result = rag_chain.invoke({"question": query,
+        #                          "chat_history": memory.chat_memory.messages})
+        chat_history.extend(
+            [
+                HumanMessage(content=query),
+                AIMessage(content=result["answer"]),
+            ])
+        print("\nAntwort:", result["answer"])
+        #print("\nSource:", result["source_documents"])
+
+
+setup_vectorbase()
+setup_chatbot()
+
+# Old system
 
 prompt_template = PromptTemplate(
     template=(
@@ -111,24 +129,3 @@ qa_chain = ConversationalRetrievalChain.from_llm(
     return_source_documents=False,
     output_key="answer"
 )
-
-
-def continuous_chatting(rag_chain):
-    while True:
-        chat_history = []
-        query = input("\nStelle eine Frage (oder 'exit'): ")
-        if query.lower() == "exit":
-            break
-        result = rag_chain.invoke({"input": query, "chat_history": chat_history})
-        #result = rag_chain.invoke({"question": query,
-         #                          "chat_history": memory.chat_memory.messages})
-        chat_history.extend(
-            [
-                HumanMessage(content=query),
-                AIMessage(content=result["answer"]),
-            ])
-        print("\nAntwort:", result["answer"])
-        #print("\nSource:", result["source_documents"])
-
-
-#continuous_chatting(retrieval_chain_history)
