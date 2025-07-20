@@ -222,7 +222,7 @@ Added retrieval metrics Context Precision and Faithfullness. Looked more into ot
 
 Updated QA file.
 
-###
+### Frontend Sprint
 
 Added initital mockup for frontend, need to refactor some backend stuff to connect it with everything
 
