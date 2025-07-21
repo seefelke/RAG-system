@@ -23,6 +23,7 @@ if USE_OPENAI:
 else:
     INDEX_NAME = "langchain-index-museum-thesis"
 MODELS = ["Mistral", "GPT 4o Mini"]
+VECTORSTORES = ["FAISS", "PINECONE"]
 EMBEDDING_SELECTION = ["sentence-transformers/distiluse-base-multilingual-cased-v2"]
 EXTRA_NOTES = "-"
 

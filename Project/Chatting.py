@@ -13,18 +13,6 @@ from langchain.chains import create_history_aware_retriever
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import OpenAI
 
-use_openai = USE_OPENAI
-chat_model = MODEL_NAME
-if use_openai:
-    llm = OpenAI(
-        model_name="gpt-4o-mini-2024-07-18",
-        temperature=0,
-        openai_api_key=os.environ.get('OPENAI_API_KEY')
-    )
-    chat_model = "gpt-4o-mini"
-else:
-    llm = ChatOllama(model=chat_model)
-
 retriever = None
 
 history_aware_retriever = None
@@ -32,11 +20,24 @@ question_answer_chain = None
 retrieval_chain_history = None
 retrieval_chain = None
 
+llm = None
+
 
 # Current system
 # System with history reformulates the current user question based on chat history
 # (query, conversation history) -> LLM -> rephrased query -> retriever -> LLM
 def setup_chatbot():
+    global llm
+    use_openai = USE_OPENAI
+    chat_model = MODEL_NAME
+    if use_openai:
+        llm = OpenAI(
+            model_name="gpt-4o-mini-2024-07-18",
+            temperature=0,
+            openai_api_key=os.environ.get('OPENAI_API_KEY')
+        )
+    else:
+        llm = ChatOllama(model=chat_model)
     HISTORY_TEMPLATE = ChatPromptTemplate(
         [
             ("system", HISTORY_PROMPT),
@@ -100,32 +101,31 @@ setup_chatbot()
 
 # Old system
 
-prompt_template = PromptTemplate(
-    template=(
-        "Du bist ein Helfer um Fragen in einem Museum zu beantworten. "
-        "Antworte im Dialog kurz und präzise in gesprochener Sprache und versuche dich auf wenige Sätze zu "
-        "beschränken."
-        "Antworte immer nur auf deutsch"
-        "Nutze den folgenden Kontext zur Museums Ausstellung um die Fragen zu beantworten.\n\n"
-        "Kontext:\n{context}\n\n"
-        "Verlauf:\n{chat_history}\n\n"
-        "Frage:\n{question}\n\n"
-    ),
-    input_variables=["chat_history", "context", "question"]
-)
+#prompt_template = PromptTemplate(
+#    template=(
+#        "Du bist ein Helfer um Fragen in einem Museum zu beantworten. "
+#        "Antworte im Dialog kurz und präzise in gesprochener Sprache und versuche dich auf wenige Sätze zu "
+#        "beschränken."
+#        "Antworte immer nur auf deutsch"
+#        "Nutze den folgenden Kontext zur Museums Ausstellung um die Fragen zu beantworten.\n\n"
+#        "Kontext:\n{context}\n\n"
+#        "Verlauf:\n{chat_history}\n\n"
+#        "Frage:\n{question}\n\n"
+#    ),
+#    input_variables=["chat_history", "context", "question"]
+#)
 
-memory = ConversationBufferWindowMemory(
-    k=5,  # Number of conversation turns (or messages) to keep
-    memory_key="chat_history",
-    #return_messages=True,
-    output_key="answer"
-)
-#question_generator_chain = LLMChain(llm=llm, prompt=prompt)
-qa_chain = ConversationalRetrievalChain.from_llm(
-    llm=llm,
-    retriever=retriever,
-    memory=memory,
-    combine_docs_chain_kwargs={"prompt": prompt_template},
-    return_source_documents=False,
-    output_key="answer"
-)
+#memory = ConversationBufferWindowMemory(
+#    k=5,  # Number of conversation turns (or messages) to keep
+#    memory_key="chat_history",
+#    #return_messages=True,
+#    output_key="answer"
+#)
+#qa_chain = ConversationalRetrievalChain.from_llm(
+#    llm=llm,
+#    retriever=retriever,
+#    memory=memory,
+#    combine_docs_chain_kwargs={"prompt": prompt_template},
+#    return_source_documents=False,
+#    output_key="answer"
+#)

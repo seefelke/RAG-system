@@ -1,5 +1,4 @@
 import gradio as gr
-import random
 import webbrowser
 import time
 import config
@@ -10,8 +9,9 @@ import Extraction
 from datasets import Dataset
 from langchain_core.messages import AIMessage, HumanMessage
 
-# TODO: Replace with actual backend call
 chat_history = []
+reload_vectorbase = False
+reload_model = False
 with open("questions_and_answers.json", "r", encoding="utf-8") as f:
     questions_and_answers = json.load(f)
 
@@ -25,7 +25,8 @@ for category in ["einfache_fragen", "schwere_fragen"]:
 
 question_list = list(question_dict.keys())
 
-def query_rag_backend(user_input, reference_input, settings):
+
+def query_rag_backend(user_input, reference_input):
     llm = Chatting.llm
     if config.USE_HISTORY:
         result = Chatting.retrieval_chain_history.invoke({
@@ -69,25 +70,26 @@ def query_rag_backend(user_input, reference_input, settings):
 
     return result["answer"], evaluation_scores
 
+
 # handle chatbot + evaluation
-def handle_chat(user_input, reference_input, chat, chunk_size, chunk_overlap, model):
-    settings = {"Chunk Size": chunk_size, "Chunk Overlap": chunk_overlap, "Model": model}
-    response, scores = query_rag_backend(user_input, reference_input, settings)
+def handle_chat(user_input, reference_input, chat):
+    response, scores = query_rag_backend(user_input, reference_input)
     chat.append((user_input, response))
     return chat, gr.update(value=format_scores(scores)), gr.update(value=""), gr.update(value="")
+
 
 def format_scores(scores):
     return "\n".join([f"{k}: {v}" for k, v in scores.items()])
 
 
-def on_model_change(selected_model):
-    # TODO: backend restart
-    global chat_history
-    chat_history = []
-    return
+def on_model_change():
+    global reload_model
+    reload_model = True
+
 
 def on_vectorbase_change():
-    Chatting.setup_vectorbase()
+    global reload_vectorbase
+    reload_vectorbase = True
 
 
 def fill_inputs_from_selection(selected_question):
@@ -96,9 +98,38 @@ def fill_inputs_from_selection(selected_question):
     else:
         return "", ""
 
+def apply_settings(chunk_size, chunk_overlap, model, vectorstore, progress=gr.Progress()):
+    global chat_history, reload_vectorbase, reload_model
+    progress(0, desc="Applying settings ...")
+    config.CHUNK_SIZE = chunk_size
+    config.CHUNK_OVERLAP = chunk_overlap
+    config.MODEL_NAME = model
+    if model == config.MODELS[1]:
+        config.USE_OPENAI = True
+    else:
+        config.USE_OPENAI = False
+    if vectorstore == config.VECTORSTORES[0]:
+        config.USE_FAISS = True
+    else:
+        config.USE_FAISS = False
+    config.STORE_TYPE = vectorstore
+    progress(0.2, desc="Applying settings ...")
+    if reload_vectorbase:
+        reload_vectorbase = False
+        Chatting.setup_vectorbase()
+    progress(0.5, desc="Applying settings ...")
+    if reload_model:
+        chat_history = []
+        reload_model = False
+        Chatting.setup_chatbot()
+    progress(1, desc="Settings applied!")
+    time.sleep(0.2)
+    print("Settings applied")
+    return gr.update("Status:")
+
+
 # build UI
 with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
-
     gr.Markdown("## RAG Assistant with Evaluation")
 
     with gr.Row():
@@ -120,6 +151,11 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
             chunk_size = gr.Number(value=config.CHUNK_SIZE, label="Chunk Size")
             chunk_overlap = gr.Number(value=config.CHUNK_OVERLAP, label="Chunk Overlap")
             model = gr.Dropdown(label="Model", choices=config.MODELS, value=config.MODELS[0], interactive=True)
+            vectorstore = gr.Dropdown(label="Vectorstore", choices=config.VECTORSTORES,
+                                      value=config.VECTORSTORES[0] if config.USE_FAISS else config.VECTORSTORES[1],
+                                      interactive=True)
+            apply_button = gr.Button("Apply Settings")
+            apply_status = gr.Markdown("Status:")
             gr.Markdown("### 📊 Evaluation Scores")
             score_box = gr.Textbox(label="Evaluation", lines=6, interactive=False)
     question_selector.change(
@@ -127,23 +163,44 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
         inputs=[question_selector],
         outputs=[user_input, reference_input]
     )
-    model.change(fn=on_model_change, inputs = [model])
+    model.change(fn=on_model_change, inputs=[])
+    vectorstore.change(fn=on_vectorbase_change, inputs=[])
+    chunk_size.change(fn=on_vectorbase_change, inputs=[])
+    chunk_overlap.change(fn=on_vectorbase_change, inputs=[])
     chat_state = gr.State([])
+    buttons = [send_button, apply_button]
+
 
     send_button.click(
+        fn=lambda: [gr.update(interactive=False)] * len(buttons),
+        outputs=buttons
+    ).then(
         handle_chat,
-        inputs=[user_input, reference_input, chat_state, chunk_size, chunk_overlap, model],
+        inputs=[user_input, reference_input, chat_state],
         outputs=[chatbot, score_box, user_input, reference_input],
+    ).then(
+        fn=lambda: [gr.update(interactive=True)] * len(buttons),
+        outputs=buttons
     )
     user_input.submit(
         handle_chat,
-        inputs=[user_input, reference_input, chat_state, chunk_size, chunk_overlap, model],
+        inputs=[user_input, reference_input, chat_state],
         outputs=[chatbot, score_box, user_input, reference_input],
+    )
+    apply_button.click(
+        fn=lambda: [gr.update(interactive=False)] * len(buttons),
+        outputs=buttons
+    ).then(
+        apply_settings,
+        inputs=[chunk_size, chunk_overlap, model, vectorstore],
+        outputs=[apply_status]
+    ).then(
+        fn=lambda: [gr.update(interactive=True)] * len(buttons),
+        outputs=buttons
     )
 
 demo.launch(prevent_thread_lock=True)
 
-#time.sleep(5)
 webbrowser.open("http://127.0.0.1:7860")
 
 try:
