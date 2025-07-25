@@ -7,6 +7,7 @@ import json
 import Evaluation
 import Extraction
 from datasets import Dataset
+import matplotlib.pyplot as plt
 from langchain_core.messages import AIMessage, HumanMessage
 
 chat_history = []
@@ -16,6 +17,7 @@ with open("questions_and_answers.json", "r", encoding="utf-8") as f:
     questions_and_answers = json.load(f)
 
 question_dict = {}
+score_history = []
 
 for category in ["einfache_fragen", "schwere_fragen"]:
     for pair in questions_and_answers.get(category, []):
@@ -27,6 +29,7 @@ question_list = list(question_dict.keys())
 
 
 def query_rag_backend(user_input, reference_input):
+    infer_time = time.time()
     llm = Chatting.llm
     if config.USE_HISTORY:
         result = Chatting.retrieval_chain_history.invoke({
@@ -42,7 +45,8 @@ def query_rag_backend(user_input, reference_input):
         result = Chatting.retrieval_chain.invoke({
             "input": user_input
         })
-
+    infer_time = time.time() - infer_time
+    eval_time = time.time()
     prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
     sources = result.get('context', [])
     ragas_dataset = []
@@ -60,21 +64,24 @@ def query_rag_backend(user_input, reference_input):
     recall = bertscore_result["recall"]
     f1 = bertscore_result["f1"]
     evaluation_scores = {
-        "F1": f1.item(),
-        "Recall": recall.item(),
-        "Precision": precision.item(),
-        "Answer Accuracy": ragas_result["nv_accuracy"],
-        "Faithfulness": ragas_result["faithfulness"],
-        "Context Precision": ragas_result["context_precision"]
+        "F1": max(0, f1.item()),
+        "Recall": max(0, recall.item()),
+        "Precision": max(0, precision.item()),
+        "Answer Accuracy": (ragas_result["nv_accuracy"][0]),
+        "Faithfulness": (ragas_result["faithfulness"][0]),
+        "Context Precision": (ragas_result["context_precision"][0])
     }
-
-    return result["answer"], evaluation_scores
+    eval_time = time.time() - eval_time
+    return result["answer"], evaluation_scores, infer_time, eval_time
 
 
 # handle chatbot + evaluation
 def handle_chat(user_input, reference_input, chat):
-    response, scores = query_rag_backend(user_input, reference_input)
+    response, scores, infer_time, eval_time = query_rag_backend(user_input, reference_input)
     chat.append((user_input, response))
+    score_history.append(scores.copy())
+    scores["Inference Time"] = infer_time
+    scores["Evaluation Time"] = eval_time
     return chat, gr.update(value=format_scores(scores)), gr.update(value=""), gr.update(value="")
 
 
@@ -128,6 +135,32 @@ def apply_settings(chunk_size, chunk_overlap, model, vectorstore, progress=gr.Pr
     return gr.update("Status:")
 
 
+def update_plots():
+    last_run = score_history[-1]
+    metrics = list(last_run.keys())
+    values = [last_run[metric] for metric in metrics]
+    box, ax = plt.subplots()
+    ax.bar(metrics, values, color='skyblue')
+    ax.set_title("Evaluation Metrics - Latest Run")
+    ax.set_ylim(0, 1)
+    ax.set_ylabel("Score")
+    ax.tick_params(axis='x', labelsize=5)
+    box.tight_layout()
+    data = {metric: [entry[metric] for entry in score_history[-10:]] for metric in metrics}
+    print(data)
+    history, ax2 = plt.subplots()
+    for metric, values in data.items():
+        x = range(1, len(values) + 1)  # match x to y's actual length
+        ax2.plot(x, values, marker='o', markersize=8,  label=metric)
+    ax2.set_title("Evaluation Metrics - Last 10")
+    ax2.set_xlabel('Run Number (last 10)')
+    ax2.set_ylabel("Score")
+    ax2.set_ylim(0, 1)
+    history.legend()
+    history.tight_layout()
+    return box, history
+
+
 # build UI
 with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
     gr.Markdown("## RAG Assistant with Evaluation")
@@ -157,7 +190,10 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
             apply_button = gr.Button("Apply Settings")
             apply_status = gr.Markdown("Status:")
             gr.Markdown("### 📊 Evaluation Scores")
-            score_box = gr.Textbox(label="Evaluation", lines=6, interactive=False)
+            score_box = gr.Textbox(label="Evaluation", lines=8, interactive=False)
+    with gr.Row():
+        boxplot = gr.Plot()
+        history_plot = gr.Plot()
     question_selector.change(
         fn=fill_inputs_from_selection,
         inputs=[question_selector],
@@ -177,7 +213,11 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
     ).then(
         handle_chat,
         inputs=[user_input, reference_input, chat_state],
-        outputs=[chatbot, score_box, user_input, reference_input],
+        outputs=[chatbot, score_box, user_input, reference_input]
+    ).then(
+        update_plots,
+        inputs=None,
+        outputs=[boxplot, history_plot]
     ).then(
         fn=lambda: [gr.update(interactive=True)] * len(buttons),
         outputs=buttons

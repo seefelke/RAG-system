@@ -230,3 +230,7 @@ Added initital mockup for frontend, need to refactor some backend stuff to conne
 Frontend is now connected to backend, chatbot is useable and evaluation is working as well. Also added a field to provide a groundtruth and a dropwdown to select a premade question/answer pair. Still need to make settings do something.
 
 Settings now work and also added some polish like buttons beeing disabled when something is running. I would consider the Frontend finished with this unless there are some bugs or features I forgot.
+
+### Frontend Sprint 2
+
+Added visualisation for last run as well as last 10 runs. Also added inference time and evaluation time stats.

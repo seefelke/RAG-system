@@ -40,6 +40,7 @@ HISTORY_PROMPT = (
 SYSTEM_PROMPT = (
     "Du bist ein Helfer um Fragen in einem Museum zu beantworten. "
     "Verwende den folgenden zusätzlichen Kontext um deine Antwort zu verbessern."
+    "Antworte kurz und präzise, verwende nicht mehr als 50 Wörter."
     "Wenn der Kontext nicht zu der Frage passt und du nicht antworten kannst"
     "dann sag dass du dabei nicht helfen kannst."
     "\n\n"
