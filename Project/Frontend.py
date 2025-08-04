@@ -64,25 +64,26 @@ def query_rag_backend(user_input, reference_input):
     recall = bertscore_result["recall"]
     f1 = bertscore_result["f1"]
     evaluation_scores = {
-        "F1": max(0, f1.item()),
-        "Recall": max(0, recall.item()),
-        "Precision": max(0, precision.item()),
-        "Answer Accuracy": (ragas_result["nv_accuracy"][0]),
-        "Faithfulness": (ragas_result["faithfulness"][0]),
-        "Context Precision": (ragas_result["context_precision"][0])
+        "F1": round(max(0, f1.item()), 3),
+        "Recall": round(max(0, recall.item()), 3),
+        "Precision": round(max(0, precision.item()), 3),
+        "Answer Accuracy": round(ragas_result["nv_accuracy"][0], 3),
+        "Faithfulness": round(ragas_result["faithfulness"][0], 3),
+        "Context Precision": round(ragas_result["context_precision"][0], 3)
     }
     eval_time = time.time() - eval_time
-    return result["answer"], evaluation_scores, infer_time, eval_time
+    return result["answer"], evaluation_scores, round(infer_time, 3), round(eval_time, 3), ragas_dataset["contexts"]
 
 
 # handle chatbot + evaluation
 def handle_chat(user_input, reference_input, chat):
-    response, scores, infer_time, eval_time = query_rag_backend(user_input, reference_input)
+    response, scores, infer_time, eval_time, contexts = query_rag_backend(user_input, reference_input)
     chat.append((user_input, response))
     score_history.append(scores.copy())
     scores["Inference Time"] = infer_time
     scores["Evaluation Time"] = eval_time
-    return chat, gr.update(value=format_scores(scores)), gr.update(value=""), gr.update(value="")
+    return chat, gr.update(value=format_scores(scores)), gr.update(value=""), gr.update(value=""), gr.update(
+        value=contexts)
 
 
 def format_scores(scores):
@@ -104,6 +105,7 @@ def fill_inputs_from_selection(selected_question):
         return selected_question, question_dict[selected_question]
     else:
         return "", ""
+
 
 def apply_settings(chunk_size, chunk_overlap, model, vectorstore, progress=gr.Progress()):
     global chat_history, reload_vectorbase, reload_model
@@ -142,20 +144,22 @@ def update_plots():
     box, ax = plt.subplots()
     ax.bar(metrics, values, color='skyblue')
     ax.set_title("Evaluation Metrics - Latest Run")
-    ax.set_ylim(0, 1)
+    ax.set_ylim(0, 2)
+    ax.set_yticks([0, 0.5, 1.0, 2.0])
     ax.set_ylabel("Score")
     ax.tick_params(axis='x', labelsize=5)
     box.tight_layout()
     data = {metric: [entry[metric] for entry in score_history[-10:]] for metric in metrics}
-    print(data)
     history, ax2 = plt.subplots()
     for metric, values in data.items():
-        x = range(1, len(values) + 1)  # match x to y's actual length
-        ax2.plot(x, values, marker='o', markersize=8,  label=metric)
+        x = range(1, len(values) + 1)
+        ax2.plot(x, values, marker='o', markersize=3, label=metric)
     ax2.set_title("Evaluation Metrics - Last 10")
     ax2.set_xlabel('Run Number (last 10)')
     ax2.set_ylabel("Score")
-    ax2.set_ylim(0, 1)
+    ax2.set_ylim(0, 2)
+    ax2.set_xticks(range(1, len(values) + 1))
+    ax2.set_yticks([0, 0.5, 1.0, 2.0])
     history.legend()
     history.tight_layout()
     return box, history
@@ -194,6 +198,8 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
     with gr.Row():
         boxplot = gr.Plot()
         history_plot = gr.Plot()
+    with gr.Row():
+        context_box = gr.Textbox(label="Retrieved Context", interactive=False)
     question_selector.change(
         fn=fill_inputs_from_selection,
         inputs=[question_selector],
@@ -206,14 +212,13 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
     chat_state = gr.State([])
     buttons = [send_button, apply_button]
 
-
     send_button.click(
         fn=lambda: [gr.update(interactive=False)] * len(buttons),
         outputs=buttons
     ).then(
         handle_chat,
         inputs=[user_input, reference_input, chat_state],
-        outputs=[chatbot, score_box, user_input, reference_input]
+        outputs=[chatbot, score_box, user_input, reference_input, context_box]
     ).then(
         update_plots,
         inputs=None,

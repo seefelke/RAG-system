@@ -234,3 +234,7 @@ Settings now work and also added some polish like buttons beeing disabled when s
 ### Frontend Sprint 2
 
 Added visualisation for last run as well as last 10 runs. Also added inference time and evaluation time stats.
+
+### Frontend Final
+
+Added retrieved context to queries for better debugging and beautification of components.
