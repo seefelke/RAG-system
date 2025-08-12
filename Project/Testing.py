@@ -55,18 +55,18 @@ class RetrievalTesting(unittest.TestCase):
         llm = Chatting.llm
         qa_chain = Chatting.retrieval_chain
         #qa_chain = Chatting.qa_chain
-        memory = Chatting.memory
+        #memory = Chatting.memory
         today = datetime.date.today().isoformat()
         log_dir = os.path.join("logs", today)
         os.makedirs(log_dir, exist_ok=True)
-
+        random.seed(123)
         embedding = Extraction.embedding
 
         existing_files = [f for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
         log_id = len(existing_files) + 1
         csv_path = os.path.join(log_dir, f"rag_eval_{today}_{log_id}.csv")
 
-        categories = ['einfache_fragen', 'schwere_fragen', 'allgemeine_fragen']
+        categories = ['einfache_fragen', 'schwere_fragen']
         all_preds = []
         all_refs = []
         ragas_dataset = []
@@ -75,11 +75,12 @@ class RetrievalTesting(unittest.TestCase):
         metadata = {
             "Test ID": log_id,
             "Date": today,
-            "Chatbot model": Chatting.chat_model,
+            "Chatbot model": MODEL_NAME,
             "Embedding model": EMBEDDINGS,
             "Vectorstore": STORE_TYPE,
             "Chunking size": CHUNK_SIZE,
             "Chunking overlap": CHUNK_OVERLAP,
+            "Chunk amount": CHUNK_AMOUNT,
             "Additional notes": EXTRA_NOTES,
         }
 

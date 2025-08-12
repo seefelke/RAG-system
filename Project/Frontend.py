@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 from langchain_core.messages import AIMessage, HumanMessage
 
 chat_history = []
-reload_vectorbase = False
-reload_model = False
 with open("questions_and_answers.json", "r", encoding="utf-8") as f:
     questions_and_answers = json.load(f)
 
@@ -90,16 +88,6 @@ def format_scores(scores):
     return "\n".join([f"{k}: {v}" for k, v in scores.items()])
 
 
-def on_model_change():
-    global reload_model
-    reload_model = True
-
-
-def on_vectorbase_change():
-    global reload_vectorbase
-    reload_vectorbase = True
-
-
 def fill_inputs_from_selection(selected_question):
     if selected_question in question_dict:
         return selected_question, question_dict[selected_question]
@@ -107,12 +95,13 @@ def fill_inputs_from_selection(selected_question):
         return "", ""
 
 
-def apply_settings(chunk_size, chunk_overlap, model, vectorstore, progress=gr.Progress()):
-    global chat_history, reload_vectorbase, reload_model
+def apply_settings(chunk_size, chunk_overlap, chunk_amount, model, vectorstore, progress=gr.Progress()):
+    global chat_history
     progress(0, desc="Applying settings ...")
     config.CHUNK_SIZE = chunk_size
     config.CHUNK_OVERLAP = chunk_overlap
     config.MODEL_NAME = model
+    config.CHUNK_AMOUNT = chunk_amount
     if model == config.MODELS[1]:
         config.USE_OPENAI = True
     else:
@@ -123,14 +112,10 @@ def apply_settings(chunk_size, chunk_overlap, model, vectorstore, progress=gr.Pr
         config.USE_FAISS = False
     config.STORE_TYPE = vectorstore
     progress(0.2, desc="Applying settings ...")
-    if reload_vectorbase:
-        reload_vectorbase = False
-        Chatting.setup_vectorbase()
+    Chatting.setup_vectorbase()
     progress(0.5, desc="Applying settings ...")
-    if reload_model:
-        chat_history = []
-        reload_model = False
-        Chatting.setup_chatbot()
+    chat_history = []
+    Chatting.setup_chatbot()
     progress(1, desc="Settings applied!")
     time.sleep(0.2)
     print("Settings applied")
@@ -187,6 +172,7 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
             gr.Markdown("### ⚙️ Settings")
             chunk_size = gr.Number(value=config.CHUNK_SIZE, label="Chunk Size")
             chunk_overlap = gr.Number(value=config.CHUNK_OVERLAP, label="Chunk Overlap")
+            chunk_amount = gr.Number(value=config.CHUNK_AMOUNT, label="Amount of retrieved Chunks (top k)")
             model = gr.Dropdown(label="Model", choices=config.MODELS, value=config.MODELS[0], interactive=True)
             vectorstore = gr.Dropdown(label="Vectorstore", choices=config.VECTORSTORES,
                                       value=config.VECTORSTORES[0] if config.USE_FAISS else config.VECTORSTORES[1],
@@ -205,10 +191,6 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
         inputs=[question_selector],
         outputs=[user_input, reference_input]
     )
-    model.change(fn=on_model_change, inputs=[])
-    vectorstore.change(fn=on_vectorbase_change, inputs=[])
-    chunk_size.change(fn=on_vectorbase_change, inputs=[])
-    chunk_overlap.change(fn=on_vectorbase_change, inputs=[])
     chat_state = gr.State([])
     buttons = [send_button, apply_button]
 
@@ -237,7 +219,7 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
         outputs=buttons
     ).then(
         apply_settings,
-        inputs=[chunk_size, chunk_overlap, model, vectorstore],
+        inputs=[chunk_size, chunk_overlap, chunk_amount, model, vectorstore],
         outputs=[apply_status]
     ).then(
         fn=lambda: [gr.update(interactive=True)] * len(buttons),

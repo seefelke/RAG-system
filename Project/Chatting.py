@@ -75,7 +75,7 @@ def setup_chatbot():
 
 def setup_vectorbase():
     global retriever
-    retriever = Extraction.get_vectorstore().as_retriever()
+    retriever = Extraction.get_vectorstore().as_retriever(search_type="mmr", search_kwargs={"k": CHUNK_AMOUNT, "lambda_mult": 0.25})
 
 
 def continuous_chatting(rag_chain):

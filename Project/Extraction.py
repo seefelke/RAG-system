@@ -54,6 +54,8 @@ def get_vectorstore() -> VectorStore:
     else:
         embedding = HuggingFaceEmbeddings(model_name=EMBEDDINGS)
     chunks = split_documents(documents)
+    print(EMBEDDINGS)
+    print(USE_OPENAI)
     if USE_FAISS:
         vectorstore = FAISS.from_documents(chunks, embedding)
     else:

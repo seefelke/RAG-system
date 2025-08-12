@@ -1,11 +1,14 @@
-from bert_score import score as bertscore
+from bert_score import BERTScorer
 
 from ragas import evaluate
 from ragas.metrics import AnswerAccuracy, ContextPrecision, Faithfulness
 from ragas.llms import LangchainLLMWrapper
 
 def evaluate_bertscore(preds, refs):
-    P, R, F1 = bertscore(preds, refs, lang="de", model_type="bert-base-multilingual-cased", rescale_with_baseline=True)
+    scorer = BERTScorer(model_type="microsoft/deberta-xlarge-mnli", lang='de')
+    #scorer = BERTScorer(model_type="google-bert/bert-base-multilingual-cased", lang='de', num_layers=12)
+    #P, R, F1 = bertscore(preds, refs, lang=None, model_type="google-bert/bert-base-german-cased", num_layers=None, verbose=True)
+    P, R, F1 = scorer.score(preds, refs)
     return {
         "precision" : P,
         "recall" : R,
