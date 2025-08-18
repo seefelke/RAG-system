@@ -2,10 +2,10 @@ import os
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 
 USE_OPENAI = False
-USE_FAISS = True
+USE_FAISS = False
 USE_HISTORY = False
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-MODEL_NAME = "mistral"
+MODEL_NAME = "mistral-nemo"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 80
 CHUNK_AMOUNT = 8
@@ -44,7 +44,7 @@ SYSTEM_PROMPT = (
     "um deine Antworten zu verbessern."
     " Antworte stets kurz und präzise – verwende nicht mehr als 50 Wörter."
     " Formuliere deine Antworten in fließendem, grammatikalisch korrektem Deutsch."
-    " Vermeide nummerierte Stichpunkte, Bulletpoints oder andere Aufzählungsformen."
+    " Verwende niemals nummerierte Stichpunkte, Bulletpoints oder andere Aufzählungsformen."
     " Gib stattdessen vollständige Sätze in einem zusammenhängenden Fließtext wieder."
     "\n\n"
     "Context: {context}"

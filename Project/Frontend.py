@@ -67,7 +67,9 @@ def query_rag_backend(user_input, reference_input):
         "Precision": round(max(0, precision.item()), 3),
         "Answer Accuracy": round(ragas_result["nv_accuracy"][0], 3),
         "Faithfulness": round(ragas_result["faithfulness"][0], 3),
-        "Context Precision": round(ragas_result["context_precision"][0], 3)
+        "Context Precision": round(ragas_result["context_precision"][0], 3),
+        "Response Relevance": round(ragas_result["answer_relevancy"][0], 3),
+        "Answer Correctness": round(ragas_result["answer_correctness"][0], 3),
     }
     eval_time = time.time() - eval_time
     return result["answer"], evaluation_scores, round(infer_time, 3), round(eval_time, 3), ragas_dataset["contexts"]

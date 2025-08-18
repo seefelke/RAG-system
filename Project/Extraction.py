@@ -5,7 +5,8 @@ from langchain.schema.document import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 import jsonlines
 from pinecone import ServerlessSpec, Pinecone
-from config import *
+import config
+import os
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -35,8 +36,8 @@ def load(path):
 
 
 def split_documents(documents: list[Document]) -> list[Document]:
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE,
-                                                   chunk_overlap=CHUNK_OVERLAP,
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=config.CHUNK_SIZE,
+                                                   chunk_overlap=config.CHUNK_OVERLAP,
                                                    length_function=len,
                                                    is_separator_regex=False)
     return text_splitter.split_documents(documents)
@@ -46,21 +47,19 @@ def get_vectorstore() -> VectorStore:
     global embedding
     path = "PDF"
     documents = load(path)
-    pc = Pinecone(api_key=PINECONE_API_KEY)
+    pc = Pinecone(api_key=config.PINECONE_API_KEY)
     dim = 512
-    if USE_OPENAI:
+    if config.USE_OPENAI:
         dim = 1536
         embedding = OpenAIEmbeddings()
     else:
-        embedding = HuggingFaceEmbeddings(model_name=EMBEDDINGS)
+        embedding = HuggingFaceEmbeddings(model_name=config.EMBEDDINGS)
     chunks = split_documents(documents)
-    print(EMBEDDINGS)
-    print(USE_OPENAI)
-    if USE_FAISS:
+    if config.USE_FAISS:
         vectorstore = FAISS.from_documents(chunks, embedding)
     else:
-        ensure_index_exists(pc, INDEX_NAME, dim)
-        vectorstore = PineconeVectorStore.from_documents(chunks, index_name=INDEX_NAME, embedding=embedding)
+        ensure_index_exists(pc, config.INDEX_NAME, dim)
+        vectorstore = PineconeVectorStore.from_documents(chunks, index_name=config.INDEX_NAME, embedding=embedding)
     return vectorstore
 
 

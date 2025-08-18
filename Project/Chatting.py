@@ -2,7 +2,8 @@ from langchain.chains import (
     StuffDocumentsChain, LLMChain, ConversationalRetrievalChain
 )
 from langchain.memory import ConversationBufferWindowMemory
-from config import *
+import config
+import os
 import Extraction
 from langchain_ollama import ChatOllama
 from langchain.chains import RetrievalQA
@@ -28,8 +29,8 @@ llm = None
 # (query, conversation history) -> LLM -> rephrased query -> retriever -> LLM
 def setup_chatbot():
     global llm
-    use_openai = USE_OPENAI
-    chat_model = MODEL_NAME
+    use_openai = config.USE_OPENAI
+    chat_model = config.MODEL_NAME
     if use_openai:
         llm = OpenAI(
             model_name="gpt-4o-mini-2024-07-18",
@@ -40,7 +41,7 @@ def setup_chatbot():
         llm = ChatOllama(model=chat_model)
     HISTORY_TEMPLATE = ChatPromptTemplate(
         [
-            ("system", HISTORY_PROMPT),
+            ("system", config.HISTORY_PROMPT),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
         ]
@@ -48,7 +49,7 @@ def setup_chatbot():
 
     PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         [
-            ("system", SYSTEM_PROMPT),
+            ("system", config.SYSTEM_PROMPT),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
         ]
@@ -56,7 +57,7 @@ def setup_chatbot():
 
     PROMPT_TEMPLATE_NO_HISTORY = ChatPromptTemplate.from_messages(
         [
-            ("system", SYSTEM_PROMPT),
+            ("system", config.SYSTEM_PROMPT),
             ("human", "{input}"),
         ]
     )
@@ -75,7 +76,7 @@ def setup_chatbot():
 
 def setup_vectorbase():
     global retriever
-    retriever = Extraction.get_vectorstore().as_retriever(search_type="mmr", search_kwargs={"k": CHUNK_AMOUNT, "lambda_mult": 0.25})
+    retriever = Extraction.get_vectorstore().as_retriever(search_type="mmr", search_kwargs={"k": config.CHUNK_AMOUNT, "lambda_mult": 0.25})
 
 
 def continuous_chatting(rag_chain):

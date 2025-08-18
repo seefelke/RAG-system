@@ -6,13 +6,14 @@ import datetime
 import Evaluation
 import Chatting
 from datasets import Dataset
-from langchain_openai import OpenAIEmbeddings
+#from langchain_openai import OpenAIEmbeddings
 import config
-from config import *
-from langchain_huggingface import HuggingFaceEmbeddings
+import os
+#from langchain_huggingface import HuggingFaceEmbeddings
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+from tqdm import tqdm
 
 
 class RetrievalTesting(unittest.TestCase):
@@ -50,160 +51,174 @@ class RetrievalTesting(unittest.TestCase):
 
         with open("questions_and_answers.json", "r", encoding="utf-8") as f:
             questions_and_answers = json.load(f)
-
-        # Prepare logs directory
-        llm = Chatting.llm
-        qa_chain = Chatting.retrieval_chain
-        #qa_chain = Chatting.qa_chain
-        #memory = Chatting.memory
         today = datetime.date.today().isoformat()
-        log_dir = os.path.join("logs", today)
-        os.makedirs(log_dir, exist_ok=True)
-        random.seed(123)
-        embedding = Extraction.embedding
+        time_str = datetime.datetime.now().strftime("%H-%M")
+        model_str = config.MODEL_NAME + " " + config.STORE_TYPE
+        log_dir = os.path.join("logs", model_str, today, time_str)
+        with tqdm(total=4*3*4) as pbar:
+            for i in range(1,5):
+                for j in range(1,4):
+                    for k in range(1,5):
+                        # Prepare logs directory
+                        run_number = (i-1)*4*3 + (j-1)*4 + k
+                        print("New run start: " + str(run_number))
+                        config.CHUNK_SIZE = 150 * i
+                        config.CHUNK_OVERLAP = round(float(j/10) * config.CHUNK_SIZE)
+                        config.CHUNK_AMOUNT = k
+                        Chatting.setup_vectorbase()
+                        Chatting.setup_chatbot()
+                        llm = Chatting.llm
+                        qa_chain = Chatting.retrieval_chain
+                        #qa_chain = Chatting.qa_chain
+                        #memory = Chatting.memory
+                        today = datetime.date.today().isoformat()
+                        #log_dir = os.path.join("logs", today)
+                        os.makedirs(log_dir, exist_ok=True)
+                        random.seed(123)
+                        embedding = Extraction.embedding
 
-        existing_files = [f for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
-        log_id = len(existing_files) + 1
-        csv_path = os.path.join(log_dir, f"rag_eval_{today}_{log_id}.csv")
+                        #existing_files = [f for f in os.listdir(log_dir) if os.path.isfile(os.path.join(log_dir, f))]
+                        #log_id = len(existing_files) + 1
+                        csv_path = os.path.join(log_dir, f"rag_eval_{today}_{time_str}_{run_number}.csv")
 
-        categories = ['einfache_fragen', 'schwere_fragen']
-        all_preds = []
-        all_refs = []
-        ragas_dataset = []
-        results = []
+                        categories = ['einfache_fragen', 'schwere_fragen']
+                        all_preds = []
+                        all_refs = []
+                        ragas_dataset = []
+                        results = []
 
-        metadata = {
-            "Test ID": log_id,
-            "Date": today,
-            "Chatbot model": MODEL_NAME,
-            "Embedding model": EMBEDDINGS,
-            "Vectorstore": STORE_TYPE,
-            "Chunking size": CHUNK_SIZE,
-            "Chunking overlap": CHUNK_OVERLAP,
-            "Chunk amount": CHUNK_AMOUNT,
-            "Additional notes": EXTRA_NOTES,
-        }
+                        metadata = {
+                            "Test ID": run_number,
+                            "Date": today,
+                            "Chatbot model": config.MODEL_NAME,
+                            "Embedding model": config.EMBEDDINGS,
+                            "Vectorstore": config.STORE_TYPE,
+                            "Chunking size": config.CHUNK_SIZE,
+                            "Chunking overlap": config.CHUNK_OVERLAP,
+                            "Chunk amount": config.CHUNK_AMOUNT,
+                            "Additional notes": config.EXTRA_NOTES,
+                        }
 
-        for category in categories:
-            questions = questions_and_answers.get(category, [])
-            samples = random.sample(questions, min(2, len(questions)))
+                        for category in categories:
+                            questions = questions_and_answers.get(category, [])
+                            #samples = random.sample(questions, min(2, len(questions)))
+                            samples = questions[0:5]
+                            for item in samples:
+                                question = item['frage']
+                                reference = item['antwort']
+                                start_time = time.time()
+                                result = qa_chain.invoke({
+                                    "input": question
+                                })
+                                #result = qa_chain.invoke({"question": question,
+                                 #                         "chat_history": memory.chat_memory.messages})
+                                run_time = time.time() - start_time
+                                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
+                                sources = result.get('context', [])
+                                contexts = [doc.page_content for doc in sources]
+                                all_preds.append(prediction)
+                                all_refs.append(reference)
 
-            for item in samples:
-                question = item['frage']
-                reference = item['antwort']
-                start_time = time.time()
-                result = qa_chain.invoke({
-                    "input": question
-                })
-                #result = qa_chain.invoke({"question": question,
-                 #                         "chat_history": memory.chat_memory.messages})
-                run_time = time.time() - start_time
-                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-                sources = result.get('context', [])
-                contexts = [doc.page_content for doc in sources]
-                all_preds.append(prediction)
-                all_refs.append(reference)
+                                ragas_dataset.append({
+                                    "question": question,
+                                    "ground_truth": reference,
+                                    "answer": prediction,
+                                    "contexts": contexts
+                                })
 
-                ragas_dataset.append({
-                    "question": question,
-                    "ground_truth": reference,
-                    "answer": prediction,
-                    "contexts": contexts
-                })
+                                results.append({
+                                    "Category": category,
+                                    "Level": "",  # not applicable here
+                                    "Question": question,
+                                    "Ground Truth": reference,
+                                    "Prediction": prediction,
+                                    "Context": contexts,
+                                    "Time": run_time
+                                })
 
-                results.append({
-                    "Category": category,
-                    "Level": "",  # not applicable here
-                    "Question": question,
-                    "Ground Truth": reference,
-                    "Prediction": prediction,
-                    "Context": contexts,
-                    "Time": run_time
-                })
+                        fragenpaare = questions_and_answers.get("fragenpaare", [])
+                        fragenpaare_samples = fragenpaare[0:5]
 
-        fragenpaare = questions_and_answers.get("fragenpaare", [])
-        fragenpaare_samples = random.sample(fragenpaare, min(2, len(fragenpaare)))
+                        for pair in fragenpaare_samples:
+                            for level in ["leicht", "schwer"]:
+                                question = pair[level]
+                                reference = pair["antwort"]
+                                start_time = time.time()
+                                result = qa_chain.invoke({
+                                   "input": question
+                                })
+                                #result = qa_chain.invoke({"question": question,
+                                 #                         "chat_history": memory.chat_memory.messages})
+                                run_time = time.time() - start_time
+                                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
+                                sources = result.get('context', [])
+                                contexts = [doc.page_content for doc in sources]
+                                all_preds.append(prediction)
+                                all_refs.append(reference)
 
-        for pair in fragenpaare_samples:
-            for level in ["leicht", "schwer"]:
-                question = pair[level]
-                reference = pair["antwort"]
-                start_time = time.time()
-                result = qa_chain.invoke({
-                   "input": question
-                })
-                #result = qa_chain.invoke({"question": question,
-                 #                         "chat_history": memory.chat_memory.messages})
-                run_time = time.time() - start_time
-                prediction = result.get('answer', '') if isinstance(result, dict) else str(result)
-                sources = result.get('context', [])
-                contexts = [doc.page_content for doc in sources]
-                all_preds.append(prediction)
-                all_refs.append(reference)
+                                ragas_dataset.append({
+                                    "question": question,
+                                    "ground_truth": reference,
+                                    "answer": prediction,
+                                    "contexts": contexts
+                                })
 
-                ragas_dataset.append({
-                    "question": question,
-                    "ground_truth": reference,
-                    "answer": prediction,
-                    "contexts": contexts
-                })
+                                results.append({
+                                    "Category": "fragenpaare",
+                                    "Level": level,
+                                    "Question": question,
+                                    "Ground Truth": reference,
+                                    "Prediction": prediction,
+                                    "Context": contexts,
+                                    "Time": run_time
+                                })
 
-                results.append({
-                    "Category": "fragenpaare",
-                    "Level": level,
-                    "Question": question,
-                    "Ground Truth": reference,
-                    "Prediction": prediction,
-                    "Context": contexts,
-                    "Time": run_time
-                })
+                        ragas_dataset = Dataset.from_list(ragas_dataset)
 
-        ragas_dataset = Dataset.from_list(ragas_dataset)
+                        # Evaluate with full set
+                        bertscore_result = Evaluation.evaluate_bertscore(all_preds, all_refs)
+                        ragas_result = Evaluation.evaluate_ragas(llm, ragas_dataset, embedding)
+                        ragas_df = ragas_result.to_pandas()
+                        # Filter out columns that are non-metrics (e.g. strings)
+                        ragas_score_columns = ragas_df.select_dtypes(include=["number"]).columns
 
-        # Evaluate with full set
-        bertscore_result = Evaluation.evaluate_bertscore(all_preds, all_refs)
-        ragas_result = Evaluation.evaluate_ragas(llm, ragas_dataset, embedding)
-        ragas_df = ragas_result.to_pandas()
-        # Filter out columns that are non-metrics (e.g. strings)
-        ragas_score_columns = ragas_df.select_dtypes(include=["number"]).columns
+                        precisions = bertscore_result["precision"].tolist()
+                        recalls = bertscore_result["recall"].tolist()
+                        f1s = bertscore_result["f1"].tolist()
 
-        precisions = bertscore_result["precision"].tolist()
-        recalls = bertscore_result["recall"].tolist()
-        f1s = bertscore_result["f1"].tolist()
+                        for n, r in enumerate(results):
+                            # BERTScore per row
+                            r["BERTScore_Precision"] = round(precisions[n], 5)
+                            r["BERTScore_Recall"] = round(recalls[n], 5)
+                            r["BERTScore_F1"] = round(f1s[n], 5)
 
-        for i, r in enumerate(results):
-            # BERTScore per row
-            r["BERTScore_Precision"] = round(precisions[i], 5)
-            r["BERTScore_Recall"] = round(recalls[i], 5)
-            r["BERTScore_F1"] = round(f1s[i], 5)
+                            # RAGAS scores per row
+                            for column in ragas_score_columns:
+                                r[f"RAGAS_{column.replace('_', ' ').title().replace(' ', '')}"] = round(ragas_df.iloc[n][column], 5)
 
-            # RAGAS scores per row
-            for column in ragas_score_columns:
-                r[f"RAGAS_{column.replace('_', ' ').title().replace(' ', '')}"] = round(ragas_df.iloc[i][column], 5)
+                        df = pd.DataFrame(results)
+                        avg_row = df.select_dtypes(include='number').mean().to_dict()
 
-        df = pd.DataFrame(results)
-        avg_row = df.select_dtypes(include='number').mean().to_dict()
+                        for col in df.columns:
+                            if col == "Category":
+                                avg_row[col] = "Average"
+                            elif col not in avg_row:
+                                avg_row[col] = "-"
 
-        for col in df.columns:
-            if col == "Category":
-                avg_row[col] = "Average"
-            elif col not in avg_row:
-                avg_row[col] = "-"
+                        avg_df = pd.DataFrame([avg_row])
+                        df = pd.concat([df, avg_df], ignore_index=True)
 
-        avg_df = pd.DataFrame([avg_row])
-        df = pd.concat([df, avg_df], ignore_index=True)
+                        # Insert metadata rows at the top
+                        meta_rows = [{"Category": f"# {key}", "Question": str(value)} for key, value in metadata.items()]
+                        meta_df = pd.DataFrame(meta_rows)
+                        final_df = pd.concat([meta_df, pd.DataFrame([{}]), df], ignore_index=True)
 
-        # Insert metadata rows at the top
-        meta_rows = [{"Category": f"# {key}", "Question": str(value)} for key, value in metadata.items()]
-        meta_df = pd.DataFrame(meta_rows)
-        final_df = pd.concat([meta_df, pd.DataFrame([{}]), df], ignore_index=True)
+                        # Save to CSV
+                        final_df.to_csv(csv_path, index=False, encoding='utf-8-sig')
 
-        # Save to CSV
-        final_df.to_csv(csv_path, index=False, encoding='utf-8-sig')
-
-        self.update_average_graph()
-
-        print(f" Evaluation CSV saved to: {csv_path}")
+                        #self.update_average_graph()
+                        pbar.update(1)
+                        print(f" Evaluation CSV saved to: {csv_path}")
 
     def update_average_graph(self):
         N = 20

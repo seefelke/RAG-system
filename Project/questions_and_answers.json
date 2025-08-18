@@ -1,16 +1,24 @@
 {
   "einfache_fragen": [
     {
-      "frage": "Was versteht man unter Mimikry in der Natur?",
-      "antwort": "Mimikry bezeichnet das Nachahmen anderer Lebewesen zur Täuschung von Feinden, wie z.B. Schwebfliegen, die wie Wespen aussehen."
+      "frage": "Was bedeutet Mimese?",
+      "antwort": "Mimese bedeutet Täuschung durch das Anpassen des Aussehens an den Lebensraum, wie bei Schmetterlingen, die vertrockneten Blättern ähneln."
     },
     {
-      "frage": "Was bedeutet Mimese?",
-      "antwort": "Mimese ist das Anpassen des Aussehens an den Lebensraum, wie bei Schmetterlingen, die vertrockneten Blättern ähneln."
+      "frage": "Was ist ein Kleppermantel?",
+      "antwort": "Der Kleppermantel ist ein wetterfester Faltmantel, der ursprünglich als technisches Imitat konzipiert wurde. Durch geschicktes Marketing und hohe Funktionalität wurde er zum Statussymbol der 1950er-Jahre."
+    },
+    {
+      "frage": "Warum sind Fake News gefährlich?",
+      "antwort": "Sie können Meinungen beeinflussen, zu falschen Entscheidungen führen und Vertrauen in Medien untergraben."
     },
     {
       "frage": "Wozu wurde die Höhensonne ursprünglich genutzt?",
       "antwort": "Zur medizinischen Behandlung von Haut- und Mangelerkrankungen durch künstliche UV-Strahlung."
+    },
+    {
+      "frage": "Warum wurde Fanta im Zweiten Weltkrieg erfunden?",
+      "antwort": "Weil Coca-Cola nicht mehr importiert werden durfte, entwickelte man Fanta aus Molke und Apfelresten."
     },
     {
       "frage": "Was ist der Vorteil von Kunstseide gegenüber echter Seide?",
@@ -21,20 +29,12 @@
       "antwort": "Aus ihnen wurden unter anderem Nudelsiebe und Kochtöpfe hergestellt."
     },
     {
-      "frage": "Warum sind Fake News gefährlich?",
-      "antwort": "Sie können Meinungen beeinflussen, zu falschen Entscheidungen führen und Vertrauen in Medien untergraben."
-    },
-    {
-      "frage": "Warum wurde Fanta im Zweiten Weltkrieg erfunden?",
-      "antwort": "Weil Coca-Cola nicht mehr importiert werden durfte, entwickelte man Fanta aus Molke und Apfelresten."
-    },
-    {
-      "frage": "Was ist ein Kleppermantel?",
-      "antwort": "Der Kleppermantel ist ein wetterfester Faltmantel, der ursprünglich als technisches Imitat konzipiert wurde. Durch geschicktes Marketing und hohe Funktionalität wurde er zum Statussymbol der 1950er-Jahre."
-    },
-    {
       "frage": "Was ist Kunstleder?",
       "antwort": "Kunstleder ist meist ein mit PVC beschichtetes Textilgewebe, das echtes Leder täuschend echt imitiert."
+    },
+    {
+      "frage": "Was versteht man unter Mimikry in der Natur?",
+      "antwort": "Mimikry bezeichnet das Nachahmen anderer Lebewesen zur Täuschung von Feinden, wie z.B. Schwebfliegen, die wie Wespen aussehen."
     },
     {
       "frage": "Was ist der Unterschied zwischen Kristall- und Pressglas?",
@@ -48,29 +48,29 @@
       "antwort": "Hierbei handelt es sich um Mimikry. Das Nachahmen anderer Tiere dient dazu feindselige Tiere oder potenzielle Beute zu täuschen."
     },
     {
-      "leicht": "Was machen Schmetterlinge, um sich zu tarnen?",
-      "schwer": "Wie wird die morphologische Umweltanpassung bei Tieren wissenschaftlich bezeichnet?",
-      "antwort": "Hierbei handelt es sich um Mimese. Das Anpassen an die Umgebung, beispielsweise durch Färbungen, dient zur Tarnung um andere Tiere zu täuschen."
-    },
-    {
-      "leicht": "Was ist Stuckmarmor?",
-      "schwer": "Inwiefern übertrifft Stuckmarmor in seinen gestalterischen Möglichkeiten das Naturvorbild?",
-      "antwort": "Stuckmarmor ist ein künstlich hergestellter Imitatmarmor aus Gips, Leimwasser und Pigmenten. Er lässt sich leichter formen und bietet bei der Farbgestaltung mehr kreative Möglichkeiten als echter Marmor."
-    },
-    {
       "leicht": "Wozu tragen Menschen künstliche Wimpern oder Perücken?",
       "schwer": "Wie reflektieren kosmetische Körperimitate gesellschaftliche Erwartungen an Schönheit und Identität?",
       "antwort": "Künstliche Wimpern, Perücken und Epithesen dienen nicht nur der Verschönerung oder Kompensation körperlicher Verluste, sondern spiegeln auch gesellschaftliche Schönheitsideale und den Wunsch nach Normalität wider."
     },
     {
+      "leicht": "Was ist ein Deepfake und warum ist es problematisch?",
+      "schwer": "Wie lassen sich KI-generierte Medieninhalte, die täuschend echt wirken, definieren und welche Risiken bergen sie für gesellschaftliche Kommunikation?",
+      "antwort": "Ein Deepfake ist eine mit KI manipulierte Medienproduktion, etwa Video oder Audio, die so echt wirkt, dass sie kaum als Fälschung zu erkennen ist. Diese Technik ermöglicht gezielte Desinformation, untergräbt Vertrauen in mediale Inhalte und stellt damit eine erhebliche Herausforderung für Medienkompetenz und Demokratie dar."
+    },
+    {
+      "leicht": "Was ist Stuckmarmor und wieso wird er anstatt echtem Marmor verwendet?",
+      "schwer": "Inwiefern übertrifft Stuckmarmor in seinen gestalterischen Möglichkeiten das Naturvorbild?",
+      "antwort": "Stuckmarmor ist ein künstlich hergestellter Imitatmarmor aus Gips, Leimwasser und Pigmenten. Er lässt sich leichter formen und bietet bei der Farbgestaltung mehr kreative Möglichkeiten als echter Marmor."
+    },
+    {
+      "leicht": "Warum wurden viele religiöse Objekte aus Messing statt Gold gefertigt?",
+      "schwer": "Welche religiöse Haltung rechtfertigt den bewussten Einsatz günstiger Imitate anstelle von Edelmetallen?",
+      "antwort": "Im Zisterzienserorden galt materielle Genügsamkeit als Tugend. Statt Gold verwendete man Messing oder Blattvergoldung, um Demut auszudrücken – mit Ausnahme von Objekten für Leib und Blut Christi, die aus echtem Gold und Silber bestehen mussten."
+    },
+    {
       "leicht": "Was konnte man mit Kunstfasern wie Kunstseide nachahmen?",
       "schwer": "Welcher Technologiesprung ermöglichte breite Zugänglichkeit zu Luxusgütern um 1900?",
       "antwort": "Herstellung von Imitaten wie Kunstseide."
-    },
-    {
-      "leicht": "Was ist ein Deepfake?",
-      "schwer": "Inwiefern stellen gefälschte Medien eine neue Dimension der Fälschung in gesellschaftlicher Kommunikation dar?",
-      "antwort": "Ein Deepfake ist eine mit KI manipulierte Medienproduktion – etwa Video oder Audio – die so echt wirkt, dass sie kaum als Fälschung zu erkennen ist. Diese Technik ermöglicht gezielte Desinformation, untergräbt Vertrauen in mediale Inhalte und stellt damit eine erhebliche Herausforderung für Medienkompetenz und Demokratie dar."
     },
     {
       "leicht": "Was war die Konstantinische Schenkung?",
@@ -83,9 +83,9 @@
       "antwort": "Produktfälschungen sind illegale Nachbildungen geschützter Marken oder Designs. Obwohl sie verboten sind, erfordern sie oft handwerkliches Können – wie etwa bei Kunstfälschungen – und bewegen sich deshalb im Spannungsfeld zwischen Verbrechen und Bewunderung."
     },
     {
-      "leicht": "Warum wurden viele religiöse Objekte aus Messing statt Gold gefertigt?",
-      "schwer": "Welche religiöse Haltung rechtfertigt den bewussten Einsatz günstiger Imitate anstelle von Edelmetallen?",
-      "antwort": "Im Zisterzienserorden galt materielle Genügsamkeit als Tugend. Statt Gold verwendete man Messing oder Blattvergoldung, um Demut auszudrücken – mit Ausnahme von Objekten für Leib und Blut Christi, die aus echtem Gold und Silber bestehen mussten."
+      "leicht": "Was machen Schmetterlinge, um sich zu tarnen?",
+      "schwer": "Wie wird die morphologische Umweltanpassung bei Tieren wissenschaftlich bezeichnet?",
+      "antwort": "Hierbei handelt es sich um Mimese. Das Anpassen an die Umgebung, beispielsweise durch Färbungen, dient zur Tarnung um andere Tiere zu täuschen."
     },
     {
       "leicht": "Warum gibt es heute so viele Luxusimitate?",
