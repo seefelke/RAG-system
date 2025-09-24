@@ -7,6 +7,7 @@ import jsonlines
 from pinecone import ServerlessSpec, Pinecone
 import config
 import os
+import time
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -60,6 +61,11 @@ def get_vectorstore() -> VectorStore:
     else:
         ensure_index_exists(pc, config.INDEX_NAME, dim)
         vectorstore = PineconeVectorStore.from_documents(chunks, index_name=config.INDEX_NAME, embedding=embedding)
+        index = pc.Index(config.INDEX_NAME)
+        while(True):
+            if index.describe_index_stats()["total_vector_count"] >= len(chunks):
+                break
+            time.sleep(0.5)
     return vectorstore
 
 
@@ -94,7 +100,14 @@ def convert_to_JSONL(documents):
 
 
 def ensure_index_exists(pc, index_name: str, dimension: int):
-    if not pc.has_index(index_name):
+    # We have to clear the existing index to avoid duplicate entries
+    if pc.has_index(index_name):
+        index = pc.Index(index_name)
+        stats = index.describe_index_stats()
+        if stats.total_vector_count > 0:
+            index.delete(delete_all=True)
+        #pc.delete_index(name=index_name)
+    else:
         pc.create_index(
             name=index_name,
             dimension=dimension,

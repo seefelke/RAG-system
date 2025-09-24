@@ -8,6 +8,7 @@ import Evaluation
 import Extraction
 from datasets import Dataset
 import matplotlib.pyplot as plt
+import re
 from langchain_core.messages import AIMessage, HumanMessage
 
 chat_history = []
@@ -28,7 +29,6 @@ question_list = list(question_dict.keys())
 
 def query_rag_backend(user_input, reference_input):
     infer_time = time.time()
-    llm = Chatting.llm
     if config.USE_HISTORY:
         result = Chatting.retrieval_chain_history.invoke({
             "input": user_input,
@@ -56,8 +56,7 @@ def query_rag_backend(user_input, reference_input):
     })
     ragas_dataset = Dataset.from_list(ragas_dataset)
     bertscore_result = Evaluation.evaluate_bertscore([prediction], [reference_input])
-    ragas_result = Evaluation.evaluate_ragas(llm, ragas_dataset, Extraction.embedding)
-
+    ragas_result = Evaluation.evaluate_ragas(Chatting.eval_llm, ragas_dataset, Extraction.embedding)
     precision = bertscore_result["precision"]
     recall = bertscore_result["recall"]
     f1 = bertscore_result["f1"]
@@ -82,12 +81,24 @@ def handle_chat(user_input, reference_input, chat):
     score_history.append(scores.copy())
     scores["Inference Time"] = infer_time
     scores["Evaluation Time"] = eval_time
+    cleaned_context = [[clean_text(c) for c in row] for row in contexts]
+    flattened = [c for row in cleaned_context for c in row if isinstance(c, str)]
+    formatted_context = "\n\n".join([f"**{i + 1}.** {c}" for i, c in enumerate(flattened)])
     return chat, gr.update(value=format_scores(scores)), gr.update(value=""), gr.update(value=""), gr.update(
-        value=contexts)
+        value=formatted_context)
+
+
+def clean_text(text):
+    text = text.replace("\n", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 
 def format_scores(scores):
-    return "\n".join([f"{k}: {v}" for k, v in scores.items()])
+    return "\n".join(
+        f"- <b>{key}</b>: {value}"
+        for key, value in scores.items()
+    )
 
 
 def fill_inputs_from_selection(selected_question):
@@ -127,14 +138,15 @@ def apply_settings(chunk_size, chunk_overlap, chunk_amount, model, vectorstore, 
 def update_plots():
     last_run = score_history[-1]
     metrics = list(last_run.keys())
+    colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
     values = [last_run[metric] for metric in metrics]
     box, ax = plt.subplots()
-    ax.bar(metrics, values, color='skyblue')
+    ax.bar(metrics, values, color=colors[:len(metrics)])
     ax.set_title("Evaluation Metrics - Latest Run")
-    ax.set_ylim(0, 2)
-    ax.set_yticks([0, 0.5, 1.0, 2.0])
+    ax.set_ylim(0, 1.5)
+    ax.set_yticks([0, 0.5, 1.0])
     ax.set_ylabel("Score")
-    ax.tick_params(axis='x', labelsize=5)
+    ax.tick_params(axis='x', labelsize=7, labelrotation=45)
     box.tight_layout()
     data = {metric: [entry[metric] for entry in score_history[-10:]] for metric in metrics}
     history, ax2 = plt.subplots()
@@ -144,9 +156,9 @@ def update_plots():
     ax2.set_title("Evaluation Metrics - Last 10")
     ax2.set_xlabel('Run Number (last 10)')
     ax2.set_ylabel("Score")
-    ax2.set_ylim(0, 2)
+    ax2.set_ylim(0, 1.5)
     ax2.set_xticks(range(1, len(values) + 1))
-    ax2.set_yticks([0, 0.5, 1.0, 2.0])
+    ax2.set_yticks([0, 0.5, 1.0])
     history.legend()
     history.tight_layout()
     return box, history
@@ -175,19 +187,33 @@ with gr.Blocks(title="RAG Assistant with Evaluation") as demo:
             chunk_size = gr.Number(value=config.CHUNK_SIZE, label="Chunk Size")
             chunk_overlap = gr.Number(value=config.CHUNK_OVERLAP, label="Chunk Overlap")
             chunk_amount = gr.Number(value=config.CHUNK_AMOUNT, label="Amount of retrieved Chunks (top k)")
-            model = gr.Dropdown(label="Model", choices=config.MODELS, value=config.MODELS[0], interactive=True)
+            model = gr.Dropdown(label="Model", choices=config.MODELS, value=config.MODEL_NAME, interactive=True)
             vectorstore = gr.Dropdown(label="Vectorstore", choices=config.VECTORSTORES,
                                       value=config.VECTORSTORES[0] if config.USE_FAISS else config.VECTORSTORES[1],
                                       interactive=True)
             apply_button = gr.Button("Apply Settings")
             apply_status = gr.Markdown("Status:")
+            with gr.Accordion("Metrics Legend", open=False):
+                gr.Markdown("""
+                - **F1**: Does the response stick to retrieved context?
+                - **Recall**: How well the response answers the query?
+                - **Precision**: Readability and coherence of the response.
+                - **Answer Accuracy**:  Measures whether the generated response overlaps with the ground truth by utilizing LLM.
+                - **Faithfulness**: Assesses whether the answer accurately reflects the information found in the retrieved contexts.
+                - **Context Precision**: Evaluates the relevancy of the retrieved contexts by comparing the contexts to the groundtruth.
+                - **Response Relevance**: Evaluates how well the generated answer addresses the user's query.
+                - **Answer Correctness**: Provides a more mathematical approach to comparing response with groundtruth, similar to BERTScore.
+                - **Time Measures**: Measured in seconds.
+                """)
             gr.Markdown("### 📊 Evaluation Scores")
-            score_box = gr.Textbox(label="Evaluation", lines=8, interactive=False)
+            score_box = gr.Markdown(label="Evaluation")
     with gr.Row():
         boxplot = gr.Plot()
         history_plot = gr.Plot()
     with gr.Row():
-        context_box = gr.Textbox(label="Retrieved Context", interactive=False)
+        gr.Markdown("### Retrieved Context:")
+    with gr.Row():
+        context_box = gr.Markdown(label="Retrieved Context", elem_id="context-box")
     question_selector.change(
         fn=fill_inputs_from_selection,
         inputs=[question_selector],

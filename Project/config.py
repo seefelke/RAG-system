@@ -1,14 +1,14 @@
 import os
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 
 USE_OPENAI = False
-USE_FAISS = False
+USE_FAISS = True
 USE_HISTORY = False
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 MODEL_NAME = "mistral-nemo"
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 80
-CHUNK_AMOUNT = 8
+EVAL_MODEL = "mistral-nemo"
+CHUNK_SIZE = 600
+CHUNK_OVERLAP = 90
+CHUNK_AMOUNT = 4
 if USE_FAISS:
     STORE_TYPE = "FAISS"
 else:
@@ -23,7 +23,7 @@ if USE_OPENAI:
     INDEX_NAME = "openai-index-museum-thesis"
 else:
     INDEX_NAME = "langchain-index-museum-thesis"
-MODELS = ["Mistral", "GPT 4o Mini"]
+MODELS = ["mistral-nemo", "GPT 4o Mini"]
 VECTORSTORES = ["FAISS", "PINECONE"]
 EMBEDDING_SELECTION = ["sentence-transformers/distiluse-base-multilingual-cased-v2"]
 EXTRA_NOTES = "-"
@@ -49,3 +49,13 @@ SYSTEM_PROMPT = (
     "\n\n"
     "Context: {context}"
 )
+
+# Settings for data collection
+# range values, exclusive
+CHUNK_SIZE_STEPS = 5
+CHUNK_OVERLAP_STEPS = 4
+CHUNK_AMOUNT_STEPS = 5
+# chunk size per step
+CHUNK_SIZE_STEP_AMOUNT = 150
+# overlap per step, in percent
+CHUNK_OVERLAP_STEP_AMOUNT = 0.1

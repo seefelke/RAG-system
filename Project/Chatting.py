@@ -22,6 +22,7 @@ retrieval_chain_history = None
 retrieval_chain = None
 
 llm = None
+eval_llm = None
 
 
 # Current system
@@ -38,7 +39,9 @@ def setup_chatbot():
             openai_api_key=os.environ.get('OPENAI_API_KEY')
         )
     else:
-        llm = ChatOllama(model=chat_model)
+        llm = ChatOllama(model=chat_model, num_predict=2048)
+    global eval_llm
+    eval_llm = ChatOllama(model=config.EVAL_MODEL, num_predict=4096, request_timeout=5000)
     HISTORY_TEMPLATE = ChatPromptTemplate(
         [
             ("system", config.HISTORY_PROMPT),
@@ -46,7 +49,6 @@ def setup_chatbot():
             ("human", "{input}"),
         ]
     )
-
     PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         [
             ("system", config.SYSTEM_PROMPT),
@@ -76,7 +78,7 @@ def setup_chatbot():
 
 def setup_vectorbase():
     global retriever
-    retriever = Extraction.get_vectorstore().as_retriever(search_type="mmr", search_kwargs={"k": config.CHUNK_AMOUNT, "lambda_mult": 0.25})
+    retriever = Extraction.get_vectorstore().as_retriever(search_type="mmr", search_kwargs={"k": config.CHUNK_AMOUNT, "lambda_mult": 1.0})
 
 
 def continuous_chatting(rag_chain):
