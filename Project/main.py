@@ -1,4 +1,5 @@
 import Evaluation
+from Testing import generate_groundtruth
 
 if __name__ == "__main__":
     #folder = "logs/mistral-nemo FAISS/normal/" # Example path
@@ -32,4 +33,4 @@ if __name__ == "__main__":
     pq = evaluator.per_level_averages()
     print(pq)
 
-    #generate_groundtruth(5)
+    #generate_groundtruth(5, False)

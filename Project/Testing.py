@@ -51,7 +51,8 @@ class RetrievalTesting(unittest.TestCase):
             today = datetime.date.today().isoformat()
             time_str = datetime.datetime.now().strftime("%H-%M")
             model_str = config.MODEL_NAME + " " + config.STORE_TYPE
-            log_dir = os.path.join("logs", model_str, today, time_str)
+            question_type = "niche" if config.DOMAIN_SPECIFIC_DATA else "normal"
+            log_dir = os.path.join("logs", model_str, question_type, today, time_str)
             with tqdm(total=4*3*4) as pbar:
                 for i in range(1,config.CHUNK_SIZE_STEPS):
                     for j in range(1,config.CHUNK_OVERLAP_STEPS):
@@ -73,7 +74,10 @@ class RetrievalTesting(unittest.TestCase):
                             embedding = Extraction.embedding
 
                             csv_path = os.path.join(log_dir, f"rag_eval_{today}_{time_str}_{run_number}.csv")
-                            categories = ['einfache_fragen', 'schwere_fragen'] # 'spezielle_fragen'
+                            if config.DOMAIN_SPECIFIC_DATA:
+                                categories = ["spezielle_fragen"]
+                            else:
+                                categories = ["einfache_fragen", "schwere_fragen"]
                             all_preds = []
                             all_refs = []
                             ragas_dataset = []
@@ -131,6 +135,8 @@ class RetrievalTesting(unittest.TestCase):
                             fragenpaare_samples = fragenpaare[0:5]
 
                             for pair in fragenpaare_samples:
+                                if config.DOMAIN_SPECIFIC_DATA:
+                                    break
                                 for level in ["leicht", "schwer"]:
                                     question = pair[level]
                                     reference = pair["antwort"]
@@ -266,7 +272,11 @@ class RetrievalTesting(unittest.TestCase):
 
 
 # A bit of duplicated code, but I want this to be a separate function
-def generate_groundtruth(runs):
+def generate_groundtruth(runs, specific):
+    """
+        runs: Number of times each question is queried
+        specific: True if domain-specific questions, False otherwise
+    """
     if not os.path.exists("questions_and_answers.json"):
         raise FileNotFoundError("questions_and_answers.json not found!")
 
@@ -275,7 +285,7 @@ def generate_groundtruth(runs):
 
     today = datetime.date.today().isoformat()
     time_str = datetime.datetime.now().strftime("%H-%M")
-    model_str = config.MODEL_NAME + "_vanilla"
+    model_str = config.MODEL_NAME + "_baseline"
     log_dir = os.path.join("logs", model_str, today, time_str)
     os.makedirs(log_dir, exist_ok=True)
 
@@ -285,8 +295,10 @@ def generate_groundtruth(runs):
         all_refs = []
         ragas_dataset = []
         results = []
-
-        categories = ["spezielle_fragen"]#['einfache_fragen', 'schwere_fragen']
+        if specific:
+            categories = ["spezielle_fragen"]#['einfache_fragen', 'schwere_fragen']
+        else:
+            categories = ['einfache_fragen', 'schwere_fragen']
         for category in categories:
             questions = questions_and_answers.get(category, [])
             samples = questions[0:5]
@@ -328,6 +340,8 @@ def generate_groundtruth(runs):
         fragenpaare = questions_and_answers.get("fragenpaare", [])
         fragenpaare_samples = fragenpaare[0:5]
         for n in range(runs):
+            if specific:
+                break
             for pair in fragenpaare_samples:
                 for level in ["leicht", "schwer"]:
                     question = pair[level]

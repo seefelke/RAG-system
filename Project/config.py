@@ -61,3 +61,5 @@ CHUNK_AMOUNT_STEPS = 5
 CHUNK_SIZE_STEP_AMOUNT = 150
 # overlap per step, in percent
 CHUNK_OVERLAP_STEP_AMOUNT = 0.1
+# whether RAG data collection uses normal or specific questions
+DOMAIN_SPECIFIC_DATA = False

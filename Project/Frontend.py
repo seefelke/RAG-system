@@ -18,7 +18,7 @@ with open("questions_and_answers.json", "r", encoding="utf-8") as f:
 question_dict = {}
 score_history = []
 
-for category in ["einfache_fragen", "schwere_fragen"]:
+for category in ["einfache_fragen", "schwere_fragen", "spezielle_fragen"]:
     for pair in questions_and_answers.get(category, []):
         question = pair["frage"]
         answer = pair["antwort"]
