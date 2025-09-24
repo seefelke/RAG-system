@@ -9,6 +9,8 @@ EVAL_MODEL = "mistral-nemo"
 CHUNK_SIZE = 600
 CHUNK_OVERLAP = 90
 CHUNK_AMOUNT = 4
+OPENAI_INDEX_NAME = "openai-index-museum-thesis"
+LOCAL_INDEX_NAME = "langchain-index-museum-thesis"
 if USE_FAISS:
     STORE_TYPE = "FAISS"
 else:
@@ -20,9 +22,9 @@ else:
     EMBEDDINGS = "sentence-transformers/distiluse-base-multilingual-cased-v2"
 PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
 if USE_OPENAI:
-    INDEX_NAME = "openai-index-museum-thesis"
+    INDEX_NAME = OPENAI_INDEX_NAME
 else:
-    INDEX_NAME = "langchain-index-museum-thesis"
+    INDEX_NAME = LOCAL_INDEX_NAME
 MODELS = ["mistral-nemo", "GPT 4o Mini"]
 VECTORSTORES = ["FAISS", "PINECONE"]
 EMBEDDING_SELECTION = ["sentence-transformers/distiluse-base-multilingual-cased-v2"]

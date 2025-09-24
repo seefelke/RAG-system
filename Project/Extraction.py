@@ -55,6 +55,10 @@ def get_vectorstore() -> VectorStore:
         embedding = OpenAIEmbeddings()
     else:
         embedding = HuggingFaceEmbeddings(model_name=config.EMBEDDINGS)
+    if config.USE_OPENAI:
+        config.INDEX_NAME = config.OPENAI_INDEX_NAME
+    else:
+        config.INDEX_NAME = config.LOCAL_INDEX_NAME
     chunks = split_documents(documents)
     if config.USE_FAISS:
         vectorstore = FAISS.from_documents(chunks, embedding)
